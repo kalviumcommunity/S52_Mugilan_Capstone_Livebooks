@@ -4,10 +4,8 @@ import ErrorHandler from "./middlewar/ErrorHandler.js";
 import { CatchAsyncError } from "./middlewar/catchAsynErrors.js";
 import jwt from "jsonwebtoken";
 import ejs from "ejs";
+
 const router = express.Router();
-router.get('/mug',(req,res) => {
-  res.send('mugilan')
-})
 
 router.post("/register", async (req, res) => {
   try {
@@ -22,8 +20,10 @@ router.post("/register", async (req, res) => {
       password,
     };
 
+
     const newUser = new UserModel(user);
-    return res.status(200).send("registered done");
+    newUser.save()
+    return res.status(200).json(newUser);
 
     // const activationKey = createActivationToken(user);
 
