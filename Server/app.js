@@ -5,10 +5,13 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import routes from "./router.js";
 import ErrorMiddleware from "./middlewar/Error.js";
+
 dotenv.config();
 
 // body parser
 app.use(express.json({ limit: "50mb" }));
+app.use(express.json());
+app.use(cors());
 
 // cookies parser
 app.use(cookieParser());
