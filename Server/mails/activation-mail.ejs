@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Activation Email</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background-color: #ececec;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 5px 5px 15px #bfbfbf, -5px -5px 15px #ffffff;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #333;
+    }
+
+    .activation-code {
+      font-size: 24px;
+      font-weight: bold;
+      text-align: center;
+      background-color: #ffffff;
+      border-radius: 5px;
+      padding: 10px;
+      margin-bottom: 30px;
+      box-shadow: 5px 5px 15px #bfbfbf, -5px -5px 15px #ffffff;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Welcome to Hogwarts, <%= name %>!</h1>
+    <p>To activate your account, please use the following activation code:</p>
+    <div class="activation-code"><%= activationCode %></div>
+    <p>If you didn't request this, you can safely ignore this email.</p>
+    <p>Thank you!</p>
+  </div>
+</body>
+</html>
