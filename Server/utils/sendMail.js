@@ -1,15 +1,20 @@
 import nodemailer from "nodemailer";
-import path, { join } from "path";
+import path from "path";
 import ejs from "ejs";
+import dotenv from "dotenv";
+import { fileURLToPath } from "url";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config();
 
 const sendMail = async (options) => {
   const transporter = nodemailer.createTransport({
-    host: process.env.SMPT_HOST,
-    port: process.env.SMPT_PORT,
-    service: process.env.SMPT_SERVISE,
+    host: process.env.SMTP_HOST,
+    port: parseInt(process.env.SMTP_PORT),
+    service: process.env.SMTP_SERVICE,
     auth: {
-      user: process.env.SMPT_USER,
-      pass: process.env.SMPT_PASSWORD,
+      user: process.env.SMTP_MAIL,
+      pass: process.env.SMTP_PASSWORD,
     },
   });
 
@@ -26,8 +31,12 @@ const sendMail = async (options) => {
     html,
   };
 
-  await transporter.sendMail(mailOptions);
-
-  module.exports = sendMail;
-
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log("Email sent successfully");
+  } catch (error) {
+    console.error("Error sending email:", error);
+  }
 };
+
+export default sendMail;
