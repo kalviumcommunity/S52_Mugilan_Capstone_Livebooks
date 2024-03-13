@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
-
+import jwt  from "jsonwebtoken";
 const emailRegExpattern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
 
@@ -27,7 +27,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, "Please enter your password"],
       minlength: [6, "Password must be at least 6 characters long"],
-      maxlength: [15, "Password cannot exceed 15 characters"],
+      // maxlength: [20, "Password cannot exceed 20 characters"],
     },
     avatar: {
       public_id: String,
@@ -47,9 +47,21 @@ const userSchema = new mongoose.Schema(
         courseId: String,
       },
     ],
+
   },
   { timestamps: true }// Automatically add createdAt and updatedAt fields
 ); 
+userSchema.methods.SignAccessToken = function () {
+  return jwt.sign({ id: this._id }, process.env.ACCESS_TOKEN, {
+    expiresIn: '5m'
+  });
+};
+
+userSchema.methods.SignRefreshToken = function () {
+  return jwt.sign({ id: this._id }, process.env.REFRESH_TOKEN, {
+    expiresIn: '3d'
+  });
+};
 
 const UserModel = mongoose.model("users", userSchema);
 
