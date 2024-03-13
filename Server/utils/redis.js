@@ -1,10 +1,11 @@
 
 import { Redis } from "ioredis";
-require('dotenv').config()
+import dotenv from "dotenv"
+dotenv.config()
 
 const redisClint = () => {
     if(process.env.REDIS_URI){
-        console.log("redis connected ")
+        console.log("REDIS connected true ")
         return process.env.REDIS_URI
     }
     throw new Error("REDIS connection failed")
