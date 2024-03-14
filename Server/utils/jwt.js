@@ -41,7 +41,6 @@ export const sendToken = (user, statusCode, res) => {
     res.cookie("refresh_Token", refreshToken, refreshTokenOption);
   
     // Send response
-    console.log(refreshToken)
 
     res.status(statusCode).json({
       success: true,
