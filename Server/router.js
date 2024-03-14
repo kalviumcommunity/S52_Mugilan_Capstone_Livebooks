@@ -15,7 +15,7 @@ import {
 } from "./utils/jwt.js";
 import { isAutheticated } from "./middlewar/auth.js";
 import { redis } from "./utils/redis.js";
-import { Console } from "console";
+import { getUserById } from "./service/user.service.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const router = express.Router();
@@ -60,7 +60,6 @@ router.post(
           activationKey: activationKey.token,
         });
       } catch (err) {
-        console.log(err);
         return next(new ErrorHandler(err.message, 400));
       }
     } catch (error) {
@@ -163,7 +162,6 @@ router.get(
       res.cookie("access_Token", "", { maxAge: 0 });
       res.cookie("refresh_Token", "", { maxAge: 0 });
       const userID = req.user._id; // Access user ID from req.user
-      console.log(userID);
       await redis.del(userID); // Delete user data from Redis
 
       res.status(200).json({
@@ -178,12 +176,12 @@ router.get(
 
 router.get(
   "/refresh",
-  CatchAsyncError(async (req, res, next) => { // Corrected order of parameters
+  CatchAsyncError(async (req, res, next) => {
+    // Corrected order of parameters
 
     try {
       const refresh_token = req.cookies.refresh_Token; // Accessing cookies from the request object (req)
-      console.log(refresh_token)
-      const decode = await jwt.verify(refresh_token, process.env.REFRESH_TOKEN)
+      const decode = await jwt.verify(refresh_token, process.env.REFRESH_TOKEN);
       const message = "could not refresh the token";
       if (!decode) {
         return next(new ErrorHandler(message, 400));
@@ -215,11 +213,40 @@ router.get(
         accessToken,
       });
     } catch (error) {
-      console.log(error.message)
       return next(new ErrorHandler(error.message, 400));
     }
   })
 );
 
+router.get(
+  "/me",
+  isAutheticated,
+  CatchAsyncError(async (req, res, next) => {
+    try {
+      const userId = req.user._id;
+      getUserById(userId, res);
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  })
+);
+
+router.get(
+  "/social_auth",
+  CatchAsyncError(async (req, res, next) => {
+    try {
+      const { email, name, avatar } = req.body;
+      const user = await UserModel.findOne({ email });
+      if (!user) {
+        const newUser = await UserModel.create({ email, name, avatar });
+        sendToken(newUser, 200, res);
+      } else {
+        sendToken(user, 200, res);
+      }
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  })
+);
 
 export default router;
