@@ -7,6 +7,7 @@ import jwt from "jsonwebtoken";
 import ejs from "ejs";
 import sendMail from "./utils/sendMail.js";
 import bcrypt from "bcryptjs";
+import cloudinary from "cloudinary";
 import { CatchAsyncError } from "./middlewar/catchAsynErrors.js";
 import {
   accessTokenOption,
@@ -16,6 +17,7 @@ import {
 import { isAutheticated } from "./middlewar/auth.js";
 import { redis } from "./utils/redis.js";
 import { getUserById } from "./service/user.service.js";
+import { Error } from "mongoose";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const router = express.Router();
@@ -125,7 +127,7 @@ router.post(
   })
 );
 
-// login
+// login the user
 
 router.post(
   "/login",
@@ -142,7 +144,7 @@ router.post(
         return next(new ErrorHandler("Invalid user Email"), 400);
       }
 
-      const isPasswordVerify = await bcrypt.compare(password, user.password);
+      const isPasswordVerify = bcrypt.compare(password, user.password);
 
       if (!isPasswordVerify) {
         return next(new ErrorHandler("Invalid password"), 400);
@@ -153,6 +155,8 @@ router.post(
     }
   })
 );
+
+// logout the user
 
 router.get(
   "/logout",
@@ -173,6 +177,8 @@ router.get(
     }
   })
 );
+
+// generating token
 
 router.get(
   "/refresh",
@@ -205,6 +211,7 @@ router.get(
           expiresIn: "3d",
         }
       );
+      req.user = user;
 
       res.cookie("access_Token", accessToken, accessTokenOption);
       res.cookie("refresh_Token", refreshToken, refreshTokenOption);
@@ -218,6 +225,8 @@ router.get(
   })
 );
 
+// taking the logined user info
+
 router.get(
   "/me",
   isAutheticated,
@@ -230,6 +239,7 @@ router.get(
     }
   })
 );
+// Social athentication
 
 router.get(
   "/social_auth",
@@ -244,6 +254,117 @@ router.get(
         sendToken(user, 200, res);
       }
     } catch (error) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  })
+);
+
+// update the user info
+
+router.put(
+  "/update_user_info",
+  isAutheticated,
+  CatchAsyncError(async (req, res, next) => {
+    try {
+      const { email, name } = req.body;
+      const userId = req.user._id;
+      const user = await UserModel.findById(userId);
+      if (email && user) {
+        const isEmailExist = await UserModel.findOne({ email });
+        if (isEmailExist) {
+          return next(new ErrorHandler("email already exist ", 400));
+        }
+        user.email = email;
+        if (name && user) {
+          user.name = name;
+        }
+        await user.save();
+
+        await redis.set(userId, JSON.stringify(user));
+
+        res.status(201).json({
+          success: true,
+          user,
+        });
+      }
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  })
+);
+
+router.put(
+  "/update_user_password",
+  isAutheticated,
+  CatchAsyncError(async (req, res, next) => {
+    try {
+      const { oldPassword, newPassword } = req.body;
+      if (!oldPassword || !newPassword) {
+        return next(new ErrorHandler("Enter old and new password", 400));
+      }
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+      const userId = req.user;
+      const user = await UserModel.findById(userId);
+      if (user.password === "undefined") {
+        return next(new ErrorHandler("Invalid user", 400));
+      }
+      const isPasswordMatch = await bcrypt.compare(oldPassword, user.password);
+      if (!isPasswordMatch) {
+        return next(new ErrorHandler("Invalid old password", 400));
+      }
+
+      user.password = hashedPassword;
+      user.save();
+      await redis.set(userId, JSON.stringify(user));
+
+      res.status(201).json({
+        success: true,
+        user,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  })
+);
+
+router.put(
+  "/update_user_avatar",
+  isAutheticated,
+  CatchAsyncError(async (req, res, next) => {
+    try {
+      const { avatar } = req.body;
+      const userId = req.user._id;
+      const user = await UserModel.findById(userId);
+
+      if (avatar && user) {
+        let myCloud; // Declare myCloud variable outside the if-else block
+
+        if (user.avatar && user.avatar.public_id) {
+          await cloudinary.v2.uploader.destroy(user.avatar.public_id);
+        }
+
+        myCloud = await cloudinary.v2.uploader.upload(avatar, {
+          folder: "avatars",
+          width: 150,
+          height: 150,
+        });
+
+        user.avatar = {
+          public_id: myCloud.public_id,
+          url: myCloud.secure_url, // Check the actual property name in the myCloud object
+        };
+      }
+
+      await user.save();
+      await redis.set(userId, JSON.stringify(user));
+
+      res.status(201).json({
+        success: true,
+        user,
+      });
+    } catch (error) {
+      console.log(error);
       return next(new ErrorHandler(error.message, 400));
     }
   })
