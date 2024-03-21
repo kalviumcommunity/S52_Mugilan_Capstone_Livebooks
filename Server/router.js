@@ -21,7 +21,8 @@ import { Error } from "mongoose";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const router = express.Router();
-
+import {freeCourse} from "./models/course.js"
+import { paidCourse } from "./models/course.js";
 router.post(
   "/register",
   CatchAsyncError(async (req, res, next) => {
@@ -275,6 +276,7 @@ router.put(
           return next(new ErrorHandler("email already exist ", 400));
         }
         user.email = email;
+
         if (name && user) {
           user.name = name;
         }
