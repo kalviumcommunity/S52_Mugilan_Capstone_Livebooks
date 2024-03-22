@@ -5,7 +5,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import routes from "./router.js";
 import ErrorMiddleware from "./middlewar/Error.js";
-
+import router from "./cource.routes.js";
 dotenv.config();
 
 // body parser
@@ -23,8 +23,8 @@ app.use(
     origin: process.env.ORIGIN,
   })
 );
-app.use("/api", routes);
-
+app.use("/api", router);
+app.use("/api", routes)
 // test the routes
 
 app.get("/test", (req, res) => {

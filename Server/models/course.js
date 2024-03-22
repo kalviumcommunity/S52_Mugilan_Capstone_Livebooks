@@ -37,12 +37,12 @@ const courseDataSchema = new mongoose.Schema({
 const landingPageCourses = new mongoose.Schema({
     thumbnail : {
         public_id : {
-            require : true,
+        
             type: String
         },
         url :{
             type:String,
-            require:true
+      
         }
     },
     name : {
@@ -131,8 +131,6 @@ const livebooksPaidCourse = new mongoose.Schema({
         
     },
     course : [courseDataSchema],
-
-
 })
 
 
@@ -148,12 +146,10 @@ const livebooksFreeCourse = new mongoose.Schema({
     },
     thumbnail : {
         public_id : {
-            require : true,
             type: String
         },
         url :{
             type:String,
-            require:true
         }
     },
     tag :{
@@ -170,8 +166,8 @@ const livebooksFreeCourse = new mongoose.Schema({
 })
 
 const freeCourse = mongoose.model('freecourses', livebooksFreeCourse)
-const paidCourse = mongoose.model('freecourses', livebooksPaidCourse)
-const staticCourse = mongoose.model('freecourses', landingPageCourses)
+const paidCourse = mongoose.model('paidcourses', livebooksPaidCourse)
+const staticCourse = mongoose.model('staticources', landingPageCourses)
 
 
 export {freeCourse, paidCourse, staticCourse}
