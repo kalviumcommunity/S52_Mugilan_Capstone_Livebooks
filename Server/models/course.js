@@ -16,8 +16,8 @@ const linkSchema = new mongoose.Schema({
 
 const commentSchema = new mongoose.Schema({
   user: Object,
-  comment: String,
-  commentReplays: [Object],
+  question: String,
+  questionReplays: [Object],
 });
 
 const courseDataSchema = new mongoose.Schema({
@@ -95,7 +95,8 @@ const landingPageCourses = new mongoose.Schema({
     type : {
         type: String,
 
-    }
+    },
+    question : [commentSchema]
 
 });
 
