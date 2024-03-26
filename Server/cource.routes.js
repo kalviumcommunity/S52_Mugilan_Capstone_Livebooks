@@ -17,7 +17,7 @@ import {
 import { authorizeRole, isAutheticated } from "./middlewar/auth.js";
 import { redis } from "./utils/redis.js";
 import { getUserById } from "./service/user.service.js";
-import { Error } from "mongoose";
+import mongoose, { Error } from "mongoose";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const routes = express.Router();
@@ -221,7 +221,7 @@ routes.get(
   "/get-single-course-static/:id",
   CatchAsyncError(async (req, res, next) => {
     try {
-      const courseId = req.params.req;
+      const courseId = req.params.id;
 
       const isCastExist = await redis.get(courseId);
 
@@ -410,7 +410,6 @@ routes.get(
 
       const courseExist = userCoursesList.find(
         (course) => course._id.toString() === courseId
-
       );
 
       if (!courseExist) {
@@ -420,7 +419,7 @@ routes.get(
       }
       const course = await paidCourse.findById(courseId);
       const content = course.course;
-      console.log(content)
+      console.log(content);
 
       res.status(201).json({
         success: true,
@@ -431,5 +430,130 @@ routes.get(
     }
   })
 );
+
+// add questions in course in the paid courses.
+
+routes.put(
+  "/questions_in_course",
+  isAutheticated,
+  CatchAsyncError(async (req, res, next) => {
+    try {
+      const { question, courseId, contentId } = req.body;
+      const course = await paidCourse.findById(courseId);
+
+      if (!mongoose.Types.ObjectId.isValid(contentId)) {
+        return next(new ErrorHandler("invalid content id", 400));
+      }
+      const courseContent = course.course.find((item) =>
+        item._id.equals(contentId)
+      );
+
+      if (!courseContent) {
+        return next(new ErrorHandler("Invalid Content ID", 500));
+      }
+
+      const newQuestions = {
+        user : req.user,
+        question,
+        questionReplays : [],
+      };
+       courseContent.questions.push(newQuestions);
+
+
+      await course.save();
+
+      res.status(201).json({
+        success: true,
+        course,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
+// adding replay to the questions in the paid courses.
+
+routes.put(
+  "/add-answer",
+  isAutheticated,
+  CatchAsyncError(async (req, res, next) => {
+    try {
+      const { answer, courseId, contentId, questionId } = req.body;
+
+      const course = await paidCourse.findById(courseId);
+
+      if (!mongoose.Types.ObjectId.isValid(contentId)) {
+        return next(new ErrorHandler("invalid content id 1", 400));
+      }
+
+      const courseContent = await course.course.find((item) =>
+        item._id.equals(contentId)
+      );
+
+      if (!courseContent) {
+        return next(new ErrorHandler("Invalid Content ID 4", 500));
+      }
+
+      const question = courseContent.questions.find((item) =>
+        item._id.equals(questionId)
+      );
+
+      if (!question) {
+        return next(new ErrorHandler("Invalid Question Id", 400));
+      }
+
+      const newAnswer = {
+        user: req.user,
+        answer,
+      };
+      question.questionReplays.push(newAnswer);
+
+      await course.save();
+
+      if (req.user._id === question.user._id) {
+        console.log("mugilan");
+      } else {
+        // console.log(question.questionReplays.user);
+        const data = {
+          name: question.user.name,
+          title: courseContent.title,
+        };
+
+        const html = await ejs.renderFile(
+          path.join(__dirname, "./mails/questionReplay.ejs"),
+          data
+        );
+
+        try {
+          await sendMail({
+            email: question.user.email,
+            subject: "Question Replay",
+            template: "questionReplay.ejs",
+            data,
+          });
+        } catch (error) {
+          return next(new ErrorHandler(error.message, 400));
+        }
+      }
+      // else block finished
+
+      res.status(200).json({
+        success: true,
+        course,
+      });
+    } catch (error) {
+      console.log(error);
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+
+);
+
+// add review in the course
+routes.put("/add-review", isAutheticated, CatchAsyncError(async (req, res, next) => {
+  const reviewSchema = req.body
+}))
+
 
 export default routes;
