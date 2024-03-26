@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hogwarts IoT Question Responses</title>
+    <style>
+        body {
+            background-color: #2f2f2f;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            width: 80%;
+            max-width: 600px;
+            text-align: center;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+        }
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+        a {
+            color: #fff;
+            background-color: #009688;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+        a:hover {
+            background-color: #00796b;
+        }
+        .company-name {
+            color: #ff9900;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><span class="company-name">Hogwarts</span> IoT Question Responses</h1>
+        
+            <p>Welcome, <%= name %>!</p>
+            <p>You are viewing responses for the course: <%=title %></p>
+            <!-- Display course responses here -->
+            <a href="/login">Log
