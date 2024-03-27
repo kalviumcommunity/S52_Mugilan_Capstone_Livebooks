@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Purchase Details</title>
+    <style>
+        /* Neu Brutalism Email Style */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #212121;
+            color: #ffffff;
+            padding: 20px;
+        }
+        .container {
+            background-color: #333333;
+            border-radius: 10px;
+            padding: 20px;
+            color: #fafafa;
+            box-shadow: 10px 10px 20px #000000, -10px -10px 20px #666666;
+        }
+        h2 {
+            color: #fafafa;
+            margin-bottom: 20px;
+        }
+        p {
+            margin-bottom: 10px;
+        }
+        .order-details {
+            border-top: 1px solid #999999;
+            margin-top: 20px;
+            padding-top: 20px;
+        }
+        .highlight {
+            font-weight: bold;
+            color: #ff5722;
+        }
+        .login-link {
+            margin-top: 20px;
+        }
+        .login-link a {
+            color: #ff5722;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Order Purchase Details</h2>
+        <p>Hello <%= order.userName %>,</p>
+        <p>Thank you for your recent purchase. Below are the details of your order:</p>
+        <div class="order-details">
+            <p><span class="highlight">Order ID:</span> <%= order._id %></p>
+            <p><span class="highlight">Course Name:</span> <%= order.name %></p>
+            <p><span class="highlight">Price:</span> <%= order.price %></p>
+            <p><span class="highlight">Date of Purchase:</span> <%= order.date %></p>
+        </div>
+        <div class="login-link">
+
+        </div>
+        <p>Thank you for choosing our service!</p>
+    </div>
+</body>
+</html>
