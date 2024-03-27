@@ -34,6 +34,7 @@ const courseDataSchema = new mongoose.Schema({
 
 });
 
+
 const landingPageCourses = new mongoose.Schema({
     thumbnail : {
         public_id : {
@@ -95,6 +96,10 @@ const landingPageCourses = new mongoose.Schema({
     type : {
         type: String,
 
+    },
+    courseId:{
+        type:Object,
+        require: true
     },
     question : [commentSchema]
 

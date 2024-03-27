@@ -543,17 +543,13 @@ routes.put(
         course,
       });
     } catch (error) {
-      console.log(error);
+  
       return next(new ErrorHandler(error.message, 500));
     }
   })
 
 );
 
-// add review in the course
-routes.put("/add-review", isAutheticated, CatchAsyncError(async (req, res, next) => {
-  const reviewSchema = req.body
-}))
 
 
 export default routes;
