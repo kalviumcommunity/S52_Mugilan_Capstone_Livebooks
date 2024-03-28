@@ -8,7 +8,7 @@ import ErrorMiddleware from "./middlewar/Error.js";
 import router from "./cource.routes.js";
 import orderRouter from "./order.routes.js";
 dotenv.config();
-
+import notificationRoutes from "./notification.routes.js";
 // body parser
 app.use(express.json());
 app.use(express.json());
@@ -24,7 +24,7 @@ app.use(
     origin: process.env.ORIGIN,
   })
 );
-app.use("/api", router,orderRouter, routes);
+app.use("/api", router,orderRouter, routes,notificationRoutes);
 // test the routes
 
 app.get("/test", (req, res) => {
