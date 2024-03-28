@@ -14,15 +14,30 @@ import {
   refreshTokenOption,
   sendToken,
 } from "./utils/jwt.js";
-import { isAutheticated } from "./middlewar/auth.js";
+import { authorizeRole, isAutheticated } from "./middlewar/auth.js";
 import { redis } from "./utils/redis.js";
-import { getUserById } from "./service/user.service.js";
+import { getAllUserService, getUserById } from "./service/user.service.js";
 import { Error } from "mongoose";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const router = express.Router();
 import {freeCourse} from "./models/course.js"
 import { paidCourse } from "./models/course.js";
+
+
+
+// getting all users for -- admin only
+
+router.get("/get-all-users", isAutheticated, authorizeRole("admin"), CatchAsyncError(async(req, res, next) => {
+  try{
+    getAllUserService(res)
+  }catch(error){
+    return next(new ErrorHandler(error.message, 400))
+  }
+}))
+
+
+
 router.post(
   "/register",
   CatchAsyncError(async (req, res, next) => {
