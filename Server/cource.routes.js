@@ -27,12 +27,48 @@ import {
   createFreeCourse,
   createPaidCourse,
   createStaticCourse,
+  getAllFreeCoursesService,
+  getAllPaidCoursesService,
+  getAllStaticCoursesService,
 } from "./service/course.service.js";
+import notificationModel from "./models/notification.js";
+
+// get all the static course -- admin
+routes.get("/get-all-static-course", isAutheticated, authorizeRole("admin"), CatchAsyncError(async(req, res, next) => {
+  try{
+      getAllStaticCoursesService(res)
+  }catch(error){
+      return next(new ErrorHandler(error.message, 400))
+  }
+}))
+
+
+
+// get all the paid course  -- admin
+
+routes.get("/get-all-paid-course", isAutheticated, authorizeRole("admin"), CatchAsyncError(async(req, res, next) => {
+  try{
+      getAllPaidCoursesService(res)
+  }catch(error){
+      return next(new ErrorHandler(error.message, 400))
+  }
+}))
+
+
+// get all the free course  -- admin
+
+routes.get("/get-all-free-course", isAutheticated, authorizeRole("admin"), CatchAsyncError(async(req, res, next) => {
+  try{
+      getAllFreeCoursesService(res)
+  }catch(error){
+      return next(new ErrorHandler(error.message, 400))
+  }
+}))
+
+
 
 // creating paid course
-routes.get("/mugilan", async (req, res, next) => {
-  res.send("course page working");
-});
+
 routes.post(
   "/paid_course",
   isAutheticated,
@@ -453,12 +489,18 @@ routes.put(
       }
 
       const newQuestions = {
-        user : req.user,
+        user: req.user,
         question,
-        questionReplays : [],
+        questionReplays: [],
       };
-       courseContent.questions.push(newQuestions);
+      courseContent.questions.push(newQuestions);
 
+      await notificationModel.create({
+        user: req.user._id,
+        title: "New Questions",
+        message: `you have a new question in ${courseContent.title}`,
+        
+      });
 
       await course.save();
 
@@ -487,7 +529,7 @@ routes.put(
         return next(new ErrorHandler("invalid content id 1", 400));
       }
 
-      const courseContent = await course.course.find((item) =>
+      const courseContent =  course.course.find((item) =>
         item._id.equals(contentId)
       );
 
@@ -512,7 +554,12 @@ routes.put(
       await course.save();
 
       if (req.user._id === question.user._id) {
-        console.log("mugilan");
+        await notificationModel.create({
+          user: req.user._id,
+          title: "New Questions recived",
+          message: `you have a new question in ${ courseContent.title}`,
+          
+        });
       } else {
         // console.log(question.questionReplays.user);
         const data = {
@@ -543,13 +590,9 @@ routes.put(
         course,
       });
     } catch (error) {
-  
       return next(new ErrorHandler(error.message, 500));
     }
   })
-
 );
-
-
 
 export default routes;
