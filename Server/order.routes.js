@@ -14,7 +14,7 @@ import {
   refreshTokenOption,
   sendToken,
 } from "./utils/jwt.js";
-import { isAutheticated } from "./middlewar/auth.js";
+import { authorizeRole, isAutheticated } from "./middlewar/auth.js";
 import { redis } from "./utils/redis.js";
 import { getUserById } from "./service/user.service.js";
 import { Error } from "mongoose";
@@ -25,10 +25,22 @@ import { freeCourse, staticCourse } from "./models/course.js";
 import { paidCourse } from "./models/course.js";
 // creating order
 import notificationModel from "./models/notification.js";
-import { newOrder } from "./service/order.service.js";
+import { getAllOrderService, newOrder } from "./service/order.service.js";
 import orderModel from "./models/order.js";
 
 const orderRouter = express.Router();
+
+
+// getting all orders -- admin
+
+orderRouter.get("/get-all-order", isAutheticated, authorizeRole("admin"), CatchAsyncError(async(req, res, next) => {
+    try{
+        getAllOrderService(res)
+    }catch(error){
+        return next(new ErrorHandler(error.message, 400))
+    }
+}))
+
 
 orderRouter.post(
   "/creating-order",
