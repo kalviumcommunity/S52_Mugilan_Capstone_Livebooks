@@ -1,8 +1,8 @@
-import notificationModel from "./models/notification.js";
-import { CatchAsyncError } from "./middlewar/catchAsynErrors.js";
-import ErrorHandler from "./middlewar/ErrorHandler.js";
+import notificationModel from "../models/notification.js";
+import { CatchAsyncError } from "../middlewar/catchAsynErrors.js";
+import ErrorHandler from "../middlewar/ErrorHandler.js";
 import express from "express";
-import { authorizeRole, isAutheticated } from "./middlewar/auth.js";
+import { authorizeRole, isAutheticated } from "../middlewar/auth.js";
 const notificationRoutes = express.Router();
 import cron from "node-cron";
 // getting all notification for admin
@@ -66,7 +66,10 @@ notificationRoutes.put(
 // deleting notification after one month
 
 cron.schedule("0 0 0 * * *", async () => {
-  const thirtyDays = new Date(Date.now() - 30 * 24 * 60 * 60 *1000);
-  await notificationModel.deleteMany({status:"read", createdAt:{$lt : thirtyDays}})
-  console.log("Notifications deleted")
+  const thirtyDays = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+  await notificationModel.deleteMany({
+    status: "read",
+    createdAt: { $lt: thirtyDays },
+  });
+  console.log("Notifications deleted");
 });
