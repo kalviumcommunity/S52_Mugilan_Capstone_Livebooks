@@ -1,41 +1,63 @@
 import { fileURLToPath } from "url";
 import path from "path";
 import express from "express";
-import UserModel from "./models/user.js";
-import ErrorHandler from "./middlewar/ErrorHandler.js";
+import UserModel from "../models/user.js";
+import ErrorHandler from "../middlewar/ErrorHandler.js";
 import jwt from "jsonwebtoken";
 import ejs from "ejs";
-import sendMail from "./utils/sendMail.js";
+import sendMail from "../utils/sendMail.js";
 import bcrypt from "bcryptjs";
 import cloudinary from "cloudinary";
-import { CatchAsyncError } from "./middlewar/catchAsynErrors.js";
+import { CatchAsyncError } from "../middlewar/catchAsynErrors.js";
 import {
   accessTokenOption,
   refreshTokenOption,
   sendToken,
-} from "./utils/jwt.js";
-import { authorizeRole, isAutheticated } from "./middlewar/auth.js";
-import { redis } from "./utils/redis.js";
-import { getAllUserService, getUserById } from "./service/user.service.js";
+} from "../utils/jwt.js";
+import { authorizeRole, isAutheticated } from "../middlewar/auth.js";
+import { redis } from "../utils/redis.js";
+import {
+  getAllUserService,
+  getUserById,
+  updateUserRoleService,
+} from "../service/user.service.js";
 import { Error } from "mongoose";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const router = express.Router();
-import {freeCourse} from "./models/course.js"
-import { paidCourse } from "./models/course.js";
-
-
+import { freeCourse } from "../models/course.js";
+import { paidCourse } from "../models/course.js";
 
 // getting all users for -- admin only
 
-router.get("/get-all-users", isAutheticated, authorizeRole("admin"), CatchAsyncError(async(req, res, next) => {
-  try{
-    getAllUserService(res)
-  }catch(error){
-    return next(new ErrorHandler(error.message, 400))
-  }
-}))
+router.get(
+  "/get-all-users",
+  isAutheticated,
+  authorizeRole("admin"),
+  CatchAsyncError(async (req, res, next) => {
+    try {
+      getAllUserService(res);
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  })
+);
 
+// updating user role only for admin to change the user to admin
+
+router.put(
+  "/update-user-role",
+  isAutheticated,
+  authorizeRole("admin"),
+  CatchAsyncError(async (req, res, nect) => {
+    try {
+      const { id, role } = req.body;
+      updateUserRoleService(res, id, role);
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  })
+);
 
 
 router.post(
@@ -389,5 +411,32 @@ router.put(
 );
 
 
+
+// delete a user -- or admin only
+
+router.delete(
+  "/delete-user/:id",
+  isAutheticated,
+  authorizeRole("admin"),
+  CatchAsyncError(async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const user = await UserModel.findById(id);
+
+      if (!user) {
+        return next(new ErrorHandler("Invalid user Id", 400));
+      }
+      await user.deleteOne({ id });
+      await redis.del(id);
+
+      res.status(201).json({
+        success: true,
+        message: "User deleted Successf ully",
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  })
+);
 
 export default router;
