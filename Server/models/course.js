@@ -1,4 +1,4 @@
-import mongoose, { mongo } from "mongoose";
+import mongoose from "mongoose";
 
 const reviewSchema = new mongoose.Schema({
   user: Object,
@@ -7,18 +7,18 @@ const reviewSchema = new mongoose.Schema({
     default: 0,
   },
   comment: String,
-});
+}, { timestamps: true });
 
 const linkSchema = new mongoose.Schema({
   title: String,
   url: String,
-});
+}, { timestamps: true });
 
 const commentSchema = new mongoose.Schema({
   user: Object,
   question: String,
   questionReplays: [Object],
-});
+}, { timestamps: true });
 
 const courseDataSchema = new mongoose.Schema({
   videoUrl: String,
@@ -32,7 +32,7 @@ const courseDataSchema = new mongoose.Schema({
   suggestions : String,
   questions : [commentSchema]
 
-});
+} , { timestamps: true });
 
 
 const landingPageCourses = new mongoose.Schema({
@@ -103,7 +103,7 @@ const landingPageCourses = new mongoose.Schema({
     },
     question : [commentSchema]
 
-});
+},  { timestamps: true });
 
 
 
@@ -137,7 +137,7 @@ const livebooksPaidCourse = new mongoose.Schema({
         
     },
     course : [courseDataSchema],
-})
+},   { timestamps: true })
 
 
 const livebooksFreeCourse = new mongoose.Schema({
@@ -169,7 +169,7 @@ const livebooksFreeCourse = new mongoose.Schema({
     },
     course : [courseDataSchema],
 
-})
+},  { timestamps: true })
 
 const freeCourse = mongoose.model('freecourses', livebooksFreeCourse)
 const paidCourse = mongoose.model('paidcourses', livebooksPaidCourse)
