@@ -1,38 +1,91 @@
 import { fileURLToPath } from "url";
 import path from "path";
 import express, { Router, json } from "express";
-import UserModel from "./models/user.js";
-import ErrorHandler from "./middlewar/ErrorHandler.js";
-import jwt from "jsonwebtoken";
+import UserModel from "../models/user.js";
+import ErrorHandler from "../middlewar/ErrorHandler.js";
 import ejs from "ejs";
-import sendMail from "./utils/sendMail.js";
+import sendMail from "../utils/sendMail.js";
 import bcrypt from "bcryptjs";
 import cloudinary from "cloudinary";
-import { CatchAsyncError } from "./middlewar/catchAsynErrors.js";
-import {
-  accessTokenOption,
-  refreshTokenOption,
-  sendToken,
-} from "./utils/jwt.js";
-import { authorizeRole, isAutheticated } from "./middlewar/auth.js";
-import { redis } from "./utils/redis.js";
-import { getUserById } from "./service/user.service.js";
+import { CatchAsyncError } from "../middlewar/catchAsynErrors.js";
+import { authorizeRole, isAutheticated } from "../middlewar/auth.js";
+import { redis } from "../utils/redis.js";
 import mongoose, { Error } from "mongoose";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const routes = express.Router();
-import { freeCourse, staticCourse } from "./models/course.js";
-import { paidCourse } from "./models/course.js";
+import { freeCourse, staticCourse } from "../models/course.js";
+import { paidCourse } from "../models/course.js";
 import {
   createFreeCourse,
   createPaidCourse,
   createStaticCourse,
-} from "./service/course.service.js";
+  getAllFreeCoursesService,
+  getAllPaidCoursesService,
+  getAllStaticCoursesService,
+} from "../service/course.service.js";
+import notificationModel from "../models/notification.js";
+
+// get all the static course -- admin
+routes.get(
+  "/get-all-static-course",
+  isAutheticated,
+  authorizeRole("admin"),
+  CatchAsyncError(async (req, res, next) => {
+    try {
+      getAllStaticCoursesService(res);
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  })
+);
+
+// get all the paid course  -- admin
+
+routes.get(
+  "/get-all-paid-course",
+  isAutheticated,
+  authorizeRole("admin"),
+  CatchAsyncError(async (req, res, next) => {
+    try {
+      getAllPaidCoursesService(res);
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  })
+);
+
+// get all the free course  -- admin
+
+routes.get(
+  "/get-all-free-course",
+  isAutheticated,
+  authorizeRole("admin"),
+  CatchAsyncError(async (req, res, next) => {
+    try {
+      getAllFreeCoursesService(res);
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  })
+);
+// get all the static course  -- admin
+
+routes.get(
+  "/get-all-static-course",
+  isAutheticated,
+  authorizeRole("admin"),
+  CatchAsyncError(async (req, res, next) => {
+    try {
+      getAllStaticCoursesService(res);
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  })
+);
 
 // creating paid course
-routes.get("/mugilan", async (req, res, next) => {
-  res.send("course page working");
-});
+
 routes.post(
   "/paid_course",
   isAutheticated,
@@ -153,6 +206,57 @@ routes.put(
     }
   })
 );
+
+// delete a user -- or admin only
+
+
+routes.delete(
+  "/delete-course/:id",
+  isAutheticated,
+  authorizeRole("admin"),
+  CatchAsyncError(async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const { course } = req.body;
+
+      const validSchemas = ["paidCourse", "freeCourse", "staticCourse"];
+      if (!validSchemas.includes(course)) {
+        return next(new ErrorHandler("Invalid course schema", 400));
+      }
+
+      let courseModel;
+      switch (course) {
+        case "paidCourse":
+          courseModel = paidCourse;
+          break;
+        case "freeCourse":
+          courseModel = freeCourse;
+          break;
+        case "staticCourse":
+          courseModel = staticCourse;
+          break;
+        default:
+          return next(new ErrorHandler("Invalid course schema", 400));
+      }
+
+      const deletedCourse = await courseModel.findByIdAndDelete(id);
+      if (!deletedCourse) {
+        return next(new ErrorHandler("Course not found", 404));
+      }
+
+      await redis.del(id);
+
+      res.status(200).json({
+        success: true,
+        message: "Course deleted successfully",
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
+
 // creating the course for the static page
 
 routes.post(
@@ -453,12 +557,17 @@ routes.put(
       }
 
       const newQuestions = {
-        user : req.user,
+        user: req.user,
         question,
-        questionReplays : [],
+        questionReplays: [],
       };
-       courseContent.questions.push(newQuestions);
+      courseContent.questions.push(newQuestions);
 
+      await notificationModel.create({
+        user: req.user._id,
+        title: "New Questions",
+        message: `you have a new question in ${courseContent.title}`,
+      });
 
       await course.save();
 
@@ -487,7 +596,7 @@ routes.put(
         return next(new ErrorHandler("invalid content id 1", 400));
       }
 
-      const courseContent = await course.course.find((item) =>
+      const courseContent = course.course.find((item) =>
         item._id.equals(contentId)
       );
 
@@ -512,7 +621,11 @@ routes.put(
       await course.save();
 
       if (req.user._id === question.user._id) {
-        console.log("mugilan");
+        await notificationModel.create({
+          user: req.user._id,
+          title: "New Questions recived",
+          message: `you have a new question in ${courseContent.title}`,
+        });
       } else {
         // console.log(question.questionReplays.user);
         const data = {
@@ -543,13 +656,9 @@ routes.put(
         course,
       });
     } catch (error) {
-  
       return next(new ErrorHandler(error.message, 500));
     }
   })
-
 );
-
-
 
 export default routes;

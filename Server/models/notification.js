@@ -17,5 +17,5 @@ const notificationSchema = new mongoose.Schema({
 }, {timestamps : true})
 
 const notificationModel = mongoose.model("notification", notificationSchema)
-// mugilan
+
 export default notificationModel
