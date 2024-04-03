@@ -27,6 +27,8 @@ const __dirname = path.dirname(__filename);
 const router = express.Router();
 import { freeCourse } from "../models/course.js";
 import { paidCourse } from "../models/course.js";
+import reviewModel from "../models/review.js";
+
 
 // getting all users for -- admin only
 
@@ -438,5 +440,25 @@ router.delete(
     }
   })
 );
+
+
+// getting review from the user
+router.post("/user-review", isAutheticated, CatchAsyncError(async(req, res, next) => {
+  try{
+    const {review} = req.body
+    const user = req.user
+    await reviewModel.create({
+      review, user
+    })
+    res.status(201).json({
+      review,user
+    })
+  }catch(error){
+    return next(new ErrorHandler(error.message, 400))
+  }
+  
+
+}))
+
 
 export default router;
