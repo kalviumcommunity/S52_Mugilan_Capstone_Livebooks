@@ -1,34 +1,41 @@
 import { fileURLToPath } from "url";
 import path from "path";
 import express from "express";
-import UserModel from "./models/user.js";
-import ErrorHandler from "./middlewar/ErrorHandler.js";
+import UserModel from "../models/user.js";
+import ErrorHandler from "../middlewar/ErrorHandler.js";
 import jwt from "jsonwebtoken";
 import ejs from "ejs";
-import sendMail from "./utils/sendMail.js";
-import bcrypt from "bcryptjs";
-import cloudinary from "cloudinary";
-import { CatchAsyncError } from "./middlewar/catchAsynErrors.js";
-import {
-  accessTokenOption,
-  refreshTokenOption,
-  sendToken,
-} from "./utils/jwt.js";
-import { isAutheticated } from "./middlewar/auth.js";
-import { redis } from "./utils/redis.js";
-import { getUserById } from "./service/user.service.js";
+import sendMail from "../utils/sendMail.js";
+import { CatchAsyncError } from "../middlewar/catchAsynErrors.js";
+import { authorizeRole, isAutheticated } from "../middlewar/auth.js";
+import { redis } from "../utils/redis.js";
+import { getUserById } from "../service/user.service.js";
 import { Error } from "mongoose";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const router = express.Router();
-import { freeCourse, staticCourse } from "./models/course.js";
-import { paidCourse } from "./models/course.js";
+import { freeCourse, staticCourse } from "../models/course.js";
+import { paidCourse } from "../models/course.js";
 // creating order
-import notificationModel from "./models/notification.js";
-import { newOrder } from "./service/order.service.js";
-import orderModel from "./models/order.js";
+import notificationModel from "../models/notification.js";
+import { getAllOrderService, newOrder } from "../service/order.service.js";
+import orderModel from "../models/order.js";
 
 const orderRouter = express.Router();
+
+// getting all orders -- admin
+
+orderRouter.get(
+  "/get-all-order",
+  isAutheticated,
+  authorizeRole("admin"),
+  CatchAsyncError(async (req, res, next) => {
+    try {
+      getAllOrderService(res);
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  })
+);
 
 orderRouter.post(
   "/creating-order",
@@ -103,9 +110,9 @@ orderRouter.post(
         });
 
         if (landingPageCourses.purchaces) {
-          landingPageCourses.purchaces =landingPageCourses.purchaces + 1;
-        }else{
-            landingPageCourses.purchaces
+          landingPageCourses.purchaces = landingPageCourses.purchaces + 1;
+        } else {
+          landingPageCourses.purchaces;
         }
 
         await landingPageCourses.save();
