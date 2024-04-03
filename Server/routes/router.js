@@ -29,6 +29,7 @@ import { freeCourse } from "../models/course.js";
 import { paidCourse } from "../models/course.js";
 import reviewModel from "../models/review.js";
 
+
 // getting all users for -- admin only
 
 router.get(
@@ -440,6 +441,7 @@ router.delete(
   })
 );
 
+
 // getting review from the user
 router.post("/user-review", isAutheticated, CatchAsyncError(async(req, res, next) => {
   try{
@@ -457,5 +459,6 @@ router.post("/user-review", isAutheticated, CatchAsyncError(async(req, res, next
   
 
 }))
+
 
 export default router;
