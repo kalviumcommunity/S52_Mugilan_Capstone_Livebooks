@@ -28,7 +28,7 @@ const router = express.Router();
 import { freeCourse } from "../models/course.js";
 import { paidCourse } from "../models/course.js";
 import reviewModel from "../models/review.js";
-
+import contactModel from "../models/contactus.js";
 
 // getting all users for -- admin only
 
@@ -44,6 +44,30 @@ router.get(
     }
   })
 );
+
+// Contact us info of user
+router.post("/contact-us", CatchAsyncError(async (req, res, next) => {
+  const { name, mobileno, message } = req.body;
+
+  if (!name || !mobileno || !message) {
+    return next(new ErrorHandler("All input fields are required", 400));
+  }
+
+  if (mobileno.toString().length !== 10) {
+    return next(new ErrorHandler("Mobile number must be 10 digits", 400));
+  }
+
+  if (message.trim().length === 0) {
+    return next(new ErrorHandler("Message field cannot be empty", 400));
+  }
+
+  await contactModel.create({ name, mobileno, message });
+
+  res.status(200).json({
+    success: true,
+    message: "Contact information submitted successfully",
+  });
+}));
 
 // updating user role only for admin to change the user to admin
 
@@ -61,6 +85,7 @@ router.put(
   })
 );
 
+//  registering user
 
 router.post(
   "/register",
@@ -109,6 +134,8 @@ router.post(
     }
   })
 );
+
+// creating activation token
 
 export const createActivationToken = (user) => {
   const activationCode = Math.floor(1000 + Math.random() * 9000).toString();
@@ -223,11 +250,9 @@ router.get(
 router.get(
   "/refresh",
   CatchAsyncError(async (req, res, next) => {
-    // Corrected order of parameters
-
     try {
-      const refresh_token = req.cookies.refresh_Token; // Accessing cookies from the request object (req)
-      const decode = await jwt.verify(refresh_token, process.env.REFRESH_TOKEN);
+      const refresh_token = req.cookies.refresh_Token;
+      const decode = jwt.verify(refresh_token, process.env.REFRESH_TOKEN);
       const message = "could not refresh the token";
       if (!decode) {
         return next(new ErrorHandler(message, 400));
@@ -235,7 +260,9 @@ router.get(
       const session = await redis.get(decode.id);
 
       if (!session) {
-        return next(new ErrorHandler(message, 400));
+        return next(
+          new ErrorHandler("Please login to access the resource", 400)
+        );
       }
 
       const user = JSON.parse(session);
@@ -246,7 +273,7 @@ router.get(
 
       const refreshToken = jwt.sign(
         { id: user._id },
-        process.env.ACCESS_TOKEN,
+        process.env.REFRESH_TOKEN,
         {
           expiresIn: "3d",
         }
@@ -255,11 +282,14 @@ router.get(
 
       res.cookie("access_Token", accessToken, accessTokenOption);
       res.cookie("refresh_Token", refreshToken, refreshTokenOption);
+
+      await redis.set(user._id, JSON.stringify(user), "EX", 604800);
       res.status(200).json({
         success: true,
         accessToken,
       });
     } catch (error) {
+      console.log(error);
       return next(new ErrorHandler(error.message, 400));
     }
   })
@@ -412,8 +442,6 @@ router.put(
   })
 );
 
-
-
 // delete a user -- or admin only
 
 router.delete(
@@ -441,24 +469,26 @@ router.delete(
   })
 );
 
-
 // getting review from the user
-router.post("/user-review", isAutheticated, CatchAsyncError(async(req, res, next) => {
-  try{
-    const {review} = req.body
-    const user = req.user
-    await reviewModel.create({
-      review, user
-    })
-    res.status(201).json({
-      review,user
-    })
-  }catch(error){
-    return next(new ErrorHandler(error.message, 400))
-  }
-  
-
-}))
-
+router.post(
+  "/user-review",
+  isAutheticated,
+  CatchAsyncError(async (req, res, next) => {
+    try {
+      const { review } = req.body;
+      const user = req.user;
+      await reviewModel.create({
+        review,
+        user,
+      });
+      res.status(201).json({
+        review,
+        user,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  })
+);
 
 export default router;
