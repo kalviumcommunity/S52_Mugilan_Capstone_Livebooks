@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import { redis } from "./redis.js";
-
+dotenv.config()
 // Read expiration times from environment variables
 const accessTokenExpire = parseInt(
   process.env.ACCESS_TOKEN_EXPIRE || "300",
