@@ -331,14 +331,14 @@ routes.get(
 
       if (isCastExist) {
         const course = JSON.parse(isCastExist);
-        console.log("redis");
+
         res.status(201).json({
           success: true,
           course,
         });
       } else {
         const course = await staticCourse.findById(req.params.id);
-        await redis.set(courseId, JSON.stringify(course));
+        await redis.set(courseId, JSON.stringify(course),'EX',604800); 
         console.log("mongoos");
 
         res.status(201).json({
@@ -500,9 +500,7 @@ routes.get(
 );
 
 // which course was purchased by the user
-routes.get("/users-course-contents", (req, res) => {
-  res.send("working");
-});
+
 routes.get(
   "/users-course-content/:id",
   isAutheticated,
@@ -523,7 +521,6 @@ routes.get(
       }
       const course = await paidCourse.findById(courseId);
       const content = course.course;
-      console.log(content);
 
       res.status(201).json({
         success: true,
