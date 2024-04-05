@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 
+// review schema
+
 const reviewSchema = new mongoose.Schema({
   user: Object,
   rating: {
@@ -9,10 +11,19 @@ const reviewSchema = new mongoose.Schema({
   comment: String,
 }, { timestamps: true });
 
+
+
+
+// link Schema
+
 const linkSchema = new mongoose.Schema({
   title: String,
   url: String,
 }, { timestamps: true });
+
+
+
+// commentSchema
 
 const commentSchema = new mongoose.Schema({
   user: Object,
@@ -20,7 +31,48 @@ const commentSchema = new mongoose.Schema({
   questionReplays: [Object],
 }, { timestamps: true });
 
-const courseDataSchema = new mongoose.Schema({
+
+
+
+
+
+// cheetSheet helper
+
+// const contentHelp = new mongoose.Schema({
+//     type : {
+//         type:String,
+//         require : true
+//     },
+//     typeOf      : String,
+//     image       : String,
+//     describtion : String,
+//     credits     : String,
+//     text        : String,
+// })
+
+
+
+
+
+
+
+
+
+// Cheetsheet schema
+
+// const cheetSheetSchema = new mongoose.Schema({
+//     heading: String,
+//     subHeading : String,
+//     content : [contentHelp]
+
+// },{timestamps: true})
+
+
+
+
+// video Schema
+
+const courseVideoSchema = new mongoose.Schema({
   videoUrl: String,
   videoThumbnail: Object,
   title: String,
@@ -34,6 +86,10 @@ const courseDataSchema = new mongoose.Schema({
 
 } , { timestamps: true });
 
+
+
+
+// landing page schema
 
 const landingPageCourses = new mongoose.Schema({
     thumbnail : {
@@ -107,6 +163,20 @@ const landingPageCourses = new mongoose.Schema({
 
 
 
+
+
+// helping for moduls in schema
+
+// const modules = new mongoose.Schema({
+//     video : [courseVideoSchema],
+//     assingment : [cheetSheetSchema]
+// })
+
+
+
+
+// paid cource schema
+
 const livebooksPaidCourse = new mongoose.Schema({
 
     name : {
@@ -136,9 +206,15 @@ const livebooksPaidCourse = new mongoose.Schema({
         require:true
         
     },
-    course : [courseDataSchema],
+    course : [courseVideoSchema],
 },   { timestamps: true })
 
+
+
+
+
+
+// free cource 
 
 const livebooksFreeCourse = new mongoose.Schema({
 
@@ -167,7 +243,7 @@ const livebooksFreeCourse = new mongoose.Schema({
         require:true
         
     },
-    course : [courseDataSchema],
+    course : [courseVideoSchema],
 
 },  { timestamps: true })
 
