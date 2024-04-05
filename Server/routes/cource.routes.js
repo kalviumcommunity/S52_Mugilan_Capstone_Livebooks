@@ -146,6 +146,7 @@ routes.put(
     }
   })
 );
+// creating free cource
 
 routes.post(
   "/free_course",

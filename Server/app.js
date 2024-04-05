@@ -11,7 +11,7 @@ dotenv.config();
 import notificationRoutes from "./routes/notification.routes.js";
 import analyticsRoutes from "./routes/analytics.routes.js";
 import layoutRoutes from "./routes/layout.router.js";
-
+import cheetRoutes from "./routes/cheetSheet.routes.js";
 // body parser
 app.use(express.json());
 app.use(express.json());
@@ -28,7 +28,7 @@ app.use(
   })
 );
 
-app.use("/api", router, orderRouter, routes, notificationRoutes, analyticsRoutes, layoutRoutes);
+app.use("/api", router, orderRouter, routes, notificationRoutes, analyticsRoutes, layoutRoutes, cheetRoutes);
 
 // test the routes
 
