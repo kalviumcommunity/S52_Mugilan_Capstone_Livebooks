@@ -83,89 +83,258 @@ routes.get(
     }
   })
 );
-
-// creating paid course
-
+// creating new cource
+// creating new cource
 routes.post(
-  "/paid_course",
+  '/courses/paid',
   isAutheticated,
-  authorizeRole("admin"),
+  authorizeRole('admin'),
   CatchAsyncError(async (req, res, next) => {
+    const courseData = req.body;
     try {
-      const data = req.body;
-      const thumbnail = data.thumbnail;
-      if (thumbnail) {
-        const myCloud = cloudinary.v2.uploader.upload(thumbnail, {
-          folder: "courses",
+      // upload thumbnail
+      let thumbnail = {};
+      if (req.body.thumbnail) {
+        const result = await cloudinary.v2.uploader.upload(req.body.thumbnail, {
+          folder: 'courses',
         });
-        data.thumbnail = {
-          public_id: myCloud.public_id,
-          url: myCloud.secure_url,
+        thumbnail = {
+          public_id: result.public_id,
+          url: result.secure_url,
         };
       }
-      createPaidCourse(data, res, next);
-    } catch (error) {
-      return next(new ErrorHandler(error.message, 500));
+
+      // Process modules
+      const processedModules = await Promise.all(
+        courseData.course.map(async (module) => {
+          const processedVideos = await Promise.all(
+            module.videos.map(async (video) => {
+              if (video.videoThumbnail) {
+                try {
+                  const result = await cloudinary.v2.uploader.upload(
+                    video.videoThumbnail,
+                    {
+                      folder: 'course-videos',
+                    }
+                  );
+                  return {
+                    ...video,
+                    videoThumbnail: {
+                      public_id: result.public_id,
+                      url: result.secure_url,
+                    },
+                  };
+                } catch (err) {
+                  console.error('Error uploading video thumbnail:', err);
+                  return video;
+                }
+              }
+              return video;
+            })
+          );
+
+          const processedCheatSheets = await Promise.all(
+            module.cheatSheets.map(async (cheatSheet) => {
+              const processedContent = await Promise.all(
+                cheatSheet.content.map(async (item) => {
+                  if (item.type === 'image' && item.image) {
+                    try {
+                      const result = await cloudinary.v2.uploader.upload(
+                        item.image,
+                        {
+                          folder: 'cheat-sheets',
+                        }
+                      );
+                      return {
+                        ...item,
+                        image: {
+                          public_id: result.public_id,
+                          url: result.secure_url,
+                        },
+                      };
+                    } catch (err) {
+                      console.error('Error uploading cheat sheet image:', err);
+                      return item;
+                    }
+                  }
+                  return item;
+                })
+              );
+              return { ...cheatSheet, content: processedContent };
+            })
+          );
+
+          return {
+            ...module,
+            videos: processedVideos,
+            cheatSheets: processedCheatSheets,
+          };
+        })
+      );
+
+      // Create a new paid course
+      const course = await paidCourse.create({
+        ...courseData,
+        thumbnail,
+        modules: processedModules,
+      });
+
+      res.status(201).json({
+        success: true,
+        message: 'Paid course created successfully',
+        course,
+      });
+    } catch (err) {
+      console.log(err);
+      return next(new ErrorHandler(err.message, 500));
     }
   })
 );
 
 // editing paid course
 routes.put(
-  "/edit_paid_course/:id",
+  "/course/edit/paid/:id",
   isAutheticated,
   authorizeRole("admin"),
   CatchAsyncError(async (req, res, next) => {
+    const courseId = req.params.id;
+    const updatedCourseData = req.body;
+
     try {
-      const data = req.body;
-      const thumbnail = data.thumbnail;
+      const course = await paidCourse.findById(courseId);
 
-      if (thumbnail) {
-        await cloudinary.v2.uploader.destroy(thumbnail.public_id);
+      if (!course) {
+        return next(new ErrorHandler("Course not found", 404));
+      }
 
-        const myCloud = cloudinary.v2.uploader.upload(thumbnail, {
-          folder: "courses",
-        });
-        data.thumbnail = {
-          public_id: myCloud.public_id,
-          url: myCloud.secure_url,
+      // Handle thumbnail update
+      if (updatedCourseData.thumbnail) {
+        // Delete the existing thumbnail
+        if (course.thumbnail.public_id) {
+          await cloudinary.v2.uploader.destroy(course.thumbnail.public_id);
+        }
+
+        // Upload the new thumbnail
+        const result = await cloudinary.v2.uploader.upload(
+          updatedCourseData.thumbnail,
+          {
+            folder: "courses",
+          }
+        );
+
+        course.thumbnail = {
+          public_id: result.public_id,
+          url: result.secure_url,
         };
       }
-      const courseId = req.params.id;
-      const course = await paidCourse.findByIdAndUpdate(
-        courseId,
-        { $set: data },
-        { new: true }
+
+      // Process modules
+      const processedModules = await Promise.all(
+        updatedCourseData.course.map(async (module) => {
+          const processedVideos = await Promise.all(
+            module.videos.map(async (video) => {
+              if (video.videoThumbnail) {
+                // Delete the existing video thumbnail
+                if (video.videoThumbnail.public_id) {
+                  await cloudinary.v2.uploader.destroy(
+                    video.videoThumbnail.public_id
+                  );
+                }
+
+                // Upload the new video thumbnail
+                const result = await cloudinary.v2.uploader.upload(
+                  video.videoThumbnail,
+                  {
+                    folder: "course-videos",
+                  }
+                );
+
+                return {
+                  ...video,
+                  videoThumbnail: {
+                    public_id: result.public_id,
+                    url: result.secure_url,
+                  },
+                };
+              }
+
+              return video;
+            })
+          );
+
+          const processedCheatSheets = await Promise.all(
+            module.cheatSheets.map(async (cheatSheet) => {
+              const processedContent = await Promise.all(
+                cheatSheet.content.map(async (item) => {
+                  if (item.type === "image") {
+                    if (item.image) {
+                      // Delete the existing image
+                      if (item.image.public_id) {
+                        await cloudinary.v2.uploader.destroy(
+                          item.image.public_id
+                        );
+                      }
+
+                      // Upload the new image
+                      const result = await cloudinary.v2.uploader.upload(
+                        item.image,
+                        {
+                          folder: "cheat-sheets",
+                        }
+                      );
+
+                      return {
+                        ...item,
+                        image: {
+                          public_id: result.public_id,
+                          url: result.secure_url,
+                        },
+                      };
+                    } else {
+                      // Keep the existing image
+                      const existingImage = cheatSheet.content.find(
+                        (c) => c.type === "image"
+                      );
+                      return existingImage;
+                    }
+                  }
+
+                  return item;
+                })
+              );
+
+              return {
+                ...cheatSheet,
+                content: processedContent,
+              };
+            })
+          );
+
+          return {
+            ...module,
+            videos: processedVideos,
+            cheatSheets: processedCheatSheets,
+          };
+        })
       );
-      res.status(201).json({
+
+      // Update the course
+      course.name = updatedCourseData.name || course.name;
+      course.description = updatedCourseData.description || course.description;
+      course.tag = updatedCourseData.tag || course.tag;
+      course.level = updatedCourseData.level || course.level;
+      course.modules = processedModules;
+
+      await course.save();
+
+      res.status(200).json({
         success: true,
+        message: "Paid course updated successfully",
         course,
       });
-    } catch (error) {
-      return next(new ErrorHandler(error.message, 500));
-    }
-  })
-);
-// creating free cource
-
-routes.post(
-  "/free_course",
-  CatchAsyncError(async (req, res, next) => {
-    try {
-      const data = req.body;
-      const thumbnail = data.thumbnail;
-      if (thumbnail) {
-        const myCloud = cloudinary.v2.uploader.upload(thumbnail, {
-          folder: "courses",
-        });
-        data.thumbnail = {
-          public_id: (await myCloud).public_id,
-          url: (await myCloud).secure_url,
-        };
-      }
-      createFreeCourse(data, res, next);
-    } catch (error) {
-      return next(new ErrorHandler(error.message, 500));
+    } catch (err) {
+      console.log(err)
+      return next(new ErrorHandler(err.message, 500));
     }
   })
 );
@@ -208,8 +377,7 @@ routes.put(
   })
 );
 
-// delete a user -- or admin only
-
+// delete a course -- admin only
 
 routes.delete(
   "/delete-course/:id",
@@ -256,7 +424,6 @@ routes.delete(
     }
   })
 );
-
 
 // creating the course for the static page
 
@@ -339,7 +506,7 @@ routes.get(
         });
       } else {
         const course = await staticCourse.findById(req.params.id);
-        await redis.set(courseId, JSON.stringify(course),'EX',604800); 
+        await redis.set(courseId, JSON.stringify(course), "EX", 604800);
         console.log("mongoos");
 
         res.status(201).json({
