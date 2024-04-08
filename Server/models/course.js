@@ -34,61 +34,6 @@ const commentSchema = new mongoose.Schema({
 
 
 
-
-
-// cheetSheet helper
-
-// const contentHelp = new mongoose.Schema({
-//     type : {
-//         type:String,
-//         require : true
-//     },
-//     typeOf      : String,
-//     image       : String,
-//     describtion : String,
-//     credits     : String,
-//     text        : String,
-// })
-
-
-
-
-
-
-
-
-
-// Cheetsheet schema
-
-// const cheetSheetSchema = new mongoose.Schema({
-//     heading: String,
-//     subHeading : String,
-//     content : [contentHelp]
-
-// },{timestamps: true})
-
-
-
-
-// video Schema
-
-const courseVideoSchema = new mongoose.Schema({
-  videoUrl: String,
-  videoThumbnail: Object,
-  title: String,
-  videoSelection: String,
-  videoDescribtion: String,
-  videoLength : Number,
-  videoPlayer : String,
-  links : [linkSchema],
-  suggestions : String,
-  questions : [commentSchema]
-
-} , { timestamps: true });
-
-
-
-
 // landing page schema
 
 const landingPageCourses = new mongoose.Schema({
@@ -163,17 +108,76 @@ const landingPageCourses = new mongoose.Schema({
 
 
 
+// Quiz Question Schema
+const quizQuestionSchema = new mongoose.Schema({
+    question: { type: String, required: true },
+    options: [{ type: String, required: true }],
+    answer: { type: String, required: true },
+  });
+  
+// Quiz Schema
+const quizSchema = new mongoose.Schema({
+title: { type: String, required: true },
+questions: [quizQuestionSchema],
+});
+
+// video Schema
+
+const courseVideoSchema = new mongoose.Schema({
+  videoUrl: String,
+  videoThumbnail: Object,
+  title: String,
+  videoSelection: String,
+  videoDescribtion: String,
+  videoLength : Number,
+  videoPlayer : String,
+
+} , { timestamps: true });
 
 
-// helping for moduls in schema
+// Assignment Submission Schema
+const assignmentSubmissionSchema = new mongoose.Schema({
+    student: [Object],
+    submittedAt: { type: Date, default: Date.now },
+    file: { type: String, required: true },
+  });
+  
+  // Assignment Schema
+const assignmentSchema = new mongoose.Schema({
+    title: { type: String, required: true },
+    description: { type: String, required: true },
+    dueDate: { type: Date, required: true },
+    submissions: [assignmentSubmissionSchema],
+  });
+  
+  // Cheat Sheet Content Schema
+const cheatSheetContentSchema = new mongoose.Schema({
+    type: { type: String, required: true },
+    typeOf: String,
+    image: String,
+    description: String,
+    credits: String,
+    text: String
+  });
+  
+  // Cheat Sheet Schema
+const cheatSheetSchema = new mongoose.Schema({
+    heading: String,
+    subHeading: String,
+    content: [cheatSheetContentSchema],
+  });
 
-// const modules = new mongoose.Schema({
-//     video : [courseVideoSchema],
-//     assingment : [cheetSheetSchema]
-// })
-
-
-
+  // Module Schema
+const moduleSchema = new mongoose.Schema({
+    heading: { type: String, required: true },
+    subHeading: { type: String, required: true },
+    videos: [courseVideoSchema],
+    quizzes: [quizSchema],
+    assignments: [assignmentSchema],
+    cheatSheets: [cheatSheetSchema],
+    links : [linkSchema],
+    questions : [commentSchema]
+  });
 
 // paid cource schema
 
@@ -206,7 +210,7 @@ const livebooksPaidCourse = new mongoose.Schema({
         require:true
         
     },
-    course : [courseVideoSchema],
+    course : [moduleSchema],
 },   { timestamps: true })
 
 
@@ -243,7 +247,7 @@ const livebooksFreeCourse = new mongoose.Schema({
         require:true
         
     },
-    course : [courseVideoSchema],
+    course : [moduleSchema],
 
 },  { timestamps: true })
 
