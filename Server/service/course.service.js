@@ -1,6 +1,6 @@
 import { CatchAsyncError } from "../middlewar/catchAsynErrors.js";
 import {freeCourse, paidCourse, staticCourse} from "../models/course.js"
-
+import cloudinary from "cloudinary"
 const createPaidCourse = CatchAsyncError(async(data, res) => {
     const course = await paidCourse.create(data)
     res.status(201).json({
@@ -45,5 +45,7 @@ export const getAllFreeCoursesService = async(res) => {
         course
     })
 }
+
+  
 
 export {createStaticCourse, createFreeCourse, createPaidCourse} 
