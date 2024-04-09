@@ -83,12 +83,12 @@ routes.get(
     }
   })
 );
-// creating new cource
+
 // creating new cource
 routes.post(
-  '/courses/paid',
+  "/courses/paid",
   isAutheticated,
-  authorizeRole('admin'),
+  authorizeRole("admin"),
   CatchAsyncError(async (req, res, next) => {
     const courseData = req.body;
     try {
@@ -96,7 +96,7 @@ routes.post(
       let thumbnail = {};
       if (req.body.thumbnail) {
         const result = await cloudinary.v2.uploader.upload(req.body.thumbnail, {
-          folder: 'courses',
+          folder: "courses",
         });
         thumbnail = {
           public_id: result.public_id,
@@ -106,7 +106,7 @@ routes.post(
 
       // Process modules
       const processedModules = await Promise.all(
-        courseData.course.map(async (module) => {
+        courseData.module.map(async (module) => {
           const processedVideos = await Promise.all(
             module.videos.map(async (video) => {
               if (video.videoThumbnail) {
@@ -114,7 +114,7 @@ routes.post(
                   const result = await cloudinary.v2.uploader.upload(
                     video.videoThumbnail,
                     {
-                      folder: 'course-videos',
+                      folder: "course-videos",
                     }
                   );
                   return {
@@ -125,7 +125,7 @@ routes.post(
                     },
                   };
                 } catch (err) {
-                  console.error('Error uploading video thumbnail:', err);
+                  console.error("Error uploading video thumbnail:", err);
                   return video;
                 }
               }
@@ -133,41 +133,9 @@ routes.post(
             })
           );
 
-          const processedCheatSheets = await Promise.all(
-            module.cheatSheets.map(async (cheatSheet) => {
-              const processedContent = await Promise.all(
-                cheatSheet.content.map(async (item) => {
-                  if (item.type === 'image' && item.image) {
-                    try {
-                      const result = await cloudinary.v2.uploader.upload(
-                        item.image,
-                        {
-                          folder: 'cheat-sheets',
-                        }
-                      );
-                      return {
-                        ...item,
-                        image: {
-                          public_id: result.public_id,
-                          url: result.secure_url,
-                        },
-                      };
-                    } catch (err) {
-                      console.error('Error uploading cheat sheet image:', err);
-                      return item;
-                    }
-                  }
-                  return item;
-                })
-              );
-              return { ...cheatSheet, content: processedContent };
-            })
-          );
-
           return {
             ...module,
             videos: processedVideos,
-            cheatSheets: processedCheatSheets,
           };
         })
       );
@@ -181,7 +149,7 @@ routes.post(
 
       res.status(201).json({
         success: true,
-        message: 'Paid course created successfully',
+        message: "Paid course created successfully",
         course,
       });
     } catch (err) {
@@ -230,7 +198,7 @@ routes.put(
 
       // Process modules
       const processedModules = await Promise.all(
-        updatedCourseData.course.map(async (module) => {
+        updatedCourseData.module.map(async (module) => {
           const processedVideos = await Promise.all(
             module.videos.map(async (video) => {
               if (video.videoThumbnail) {
@@ -262,68 +230,19 @@ routes.put(
             })
           );
 
-          const processedCheatSheets = await Promise.all(
-            module.cheatSheets.map(async (cheatSheet) => {
-              const processedContent = await Promise.all(
-                cheatSheet.content.map(async (item) => {
-                  if (item.type === "image") {
-                    if (item.image) {
-                      // Delete the existing image
-                      if (item.image.public_id) {
-                        await cloudinary.v2.uploader.destroy(
-                          item.image.public_id
-                        );
-                      }
-
-                      // Upload the new image
-                      const result = await cloudinary.v2.uploader.upload(
-                        item.image,
-                        {
-                          folder: "cheat-sheets",
-                        }
-                      );
-
-                      return {
-                        ...item,
-                        image: {
-                          public_id: result.public_id,
-                          url: result.secure_url,
-                        },
-                      };
-                    } else {
-                      // Keep the existing image
-                      const existingImage = cheatSheet.content.find(
-                        (c) => c.type === "image"
-                      );
-                      return existingImage;
-                    }
-                  }
-
-                  return item;
-                })
-              );
-
-              return {
-                ...cheatSheet,
-                content: processedContent,
-              };
-            })
-          );
-
           return {
             ...module,
             videos: processedVideos,
-            cheatSheets: processedCheatSheets,
           };
         })
       );
-
+      console.log(processedModules);
       // Update the course
       course.name = updatedCourseData.name || course.name;
       course.description = updatedCourseData.description || course.description;
       course.tag = updatedCourseData.tag || course.tag;
       course.level = updatedCourseData.level || course.level;
-      course.modules = processedModules;
+      course.module = processedModules;
 
       await course.save();
 
@@ -333,16 +252,16 @@ routes.put(
         course,
       });
     } catch (err) {
-      console.log(err)
+      console.log(err);
       return next(new ErrorHandler(err.message, 500));
     }
   })
 );
 
-// edit the free course
+// create the free course
 
-routes.put(
-  "/edit_free_course/:id",
+routes.post(
+  "/courses/free",
   isAutheticated,
   authorizeRole("admin"),
   CatchAsyncError(async (req, res, next) => {
@@ -351,7 +270,7 @@ routes.put(
       const thumbnail = data.thumbnail || undefined;
 
       if (thumbnail) {
-        await cloudinary.v2.uploader.destroy(thumbnail.public_id);
+
         const myCloud = await cloudinary.v2.uploader.upload(thumbnail, {
           folder: "courses",
         });
@@ -360,15 +279,51 @@ routes.put(
           url: myCloud.secure_url,
         };
       }
+      const course = await freeCourse.create({
+        ...data,
+      });
+
+      res.status(201).json({
+        success: true,
+        course,
+      });
+    } catch (error) {
+      console.log(error);
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
+// edit the free course
+
+routes.put(
+  "/courses/edit/free/:id",
+  isAutheticated,
+  authorizeRole("admin"),
+  CatchAsyncError(async (req, res, next) => {
+    try {
+      const data = req.body;
+      const thumbnail = data.thumbnail || undefined;
       const courseId = req.params.id;
-      const course = await freeCourse.findByIdAndUpdate(
+      const course = await freeCourse.findById(courseId);
+      if (thumbnail) {
+        await cloudinary.v2.uploader.destroy(course.thumbnail.public_id);
+        const myCloud = await cloudinary.v2.uploader.upload(thumbnail, {
+          folder: "courses",
+        });
+        data.thumbnail = {
+          public_id: myCloud.public_id,
+          url: myCloud.secure_url,
+        };
+      }
+      const courses= await freeCourse.findByIdAndUpdate(
         courseId,
         { $set: data },
         { new: true }
       );
       res.status(201).json({
         success: true,
-        course,
+        courses,
       });
     } catch (error) {
       console.log(error);

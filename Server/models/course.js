@@ -150,28 +150,18 @@ const assignmentSchema = new mongoose.Schema({
     submissions: [assignmentSubmissionSchema],
   });
   
-  // Cheat Sheet Content Schema
-const cheatSheetContentSchema = new mongoose.Schema({
-    type: { type: String, required: true },
-    typeOf: String,
-    image: String,
-    description: String,
-    credits: String,
-    text: String
-  });
   
   // Cheat Sheet Schema
 const cheatSheetSchema = new mongoose.Schema({
     heading: String,
     subHeading: String,
-    content: [cheatSheetContentSchema],
+    content: String,
   });
 
   // Module Schema
 const moduleSchema = new mongoose.Schema({
-    heading: { type: String, required: true },
-    subHeading: { type: String, required: true },
-    videos: [courseVideoSchema],
+    heading: { type: String },
+    subHeading: { type: String},
     quizzes: [quizSchema],
     assignments: [assignmentSchema],
     cheatSheets: [cheatSheetSchema],
@@ -187,7 +177,7 @@ const livebooksPaidCourse = new mongoose.Schema({
         type:String,
         require:true,
     },
-    describtion: {
+    description: {
         type:String,
         require : true,
     },
@@ -210,11 +200,17 @@ const livebooksPaidCourse = new mongoose.Schema({
         require:true
         
     },
-    course : [moduleSchema],
+    module : [moduleSchema],
 },   { timestamps: true })
 
 
 
+const moduleFreeSchema = new mongoose.Schema({
+    heading: { type: String },
+    subHeading: { type: String},
+    quizzes: [quizSchema],
+    cheatSheets: [cheatSheetSchema],
+  });
 
 
 
@@ -247,7 +243,7 @@ const livebooksFreeCourse = new mongoose.Schema({
         require:true
         
     },
-    course : [moduleSchema],
+    module : [moduleFreeSchema],
 
 },  { timestamps: true })
 
