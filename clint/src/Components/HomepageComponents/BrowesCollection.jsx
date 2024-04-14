@@ -1,5 +1,8 @@
 import React from "react";
-import UIUX from "../../public/UI UX Logo.svg"
+import UIUX from "../../../public/UI UX Logo.svg"
+import DM from "../../../public/Digital Marketing Logo.webp"
+import Practice from "../../../public/practical learning.jpeg"
+import WebD from "../../../public/web develp.jpeg"
 function BrowesCollection() {
   return (
     <div className="content-center flex justify-center font-Unbounded mt-8 800px:px-5 1400px:px-16">
@@ -38,7 +41,7 @@ function BrowesCollection() {
 
             <div className="w-[22rem] h-[17rem] rounded-md bg-[#FE90E7] border p-4 border-black border- mx-auto md:mx-0 ">
                 <div>
-                    <img src={UIUX} className=" w-[40px] h-[40px] border border-black" alt="" />
+                    <img src={WebD} className=" w-[40px] h-[40px] border border-black" alt="" />
                     <p className="mt-4 font-medium" >Web Development</p>
                     <p className=" font-light text-[13px] mt-3">
                         Expand your skill set and create dynamic, responsive websites that meet the needs of modern businesses.
@@ -63,8 +66,8 @@ function BrowesCollection() {
 
             <div className="w-[22rem] h-[17rem] rounded-md bg-[#FEC901] border p-4 border-black border- mx-auto md:mx-0 ">
                 <div>
-                    <img src={UIUX} className=" w-[40px] h-[40px] border border-black" alt="" />
-                    <p className="mt-4 font-medium" >UI/UX Design</p>
+                    <img src={DM} className=" w-[40px] h-[40px] border border-black" alt="" />
+                    <p className="mt-4 font-medium" >Digital Marketing</p>
                     <p className=" font-light text-[13px] mt-3">
                         Expand your skill set and create visually appeading, user-friendly interfaces that leave a lasting impression on users 
                     </p>
@@ -89,8 +92,8 @@ function BrowesCollection() {
 
             <div className="w-[22rem] h-[17rem] rounded-md bg-[#87A1EC] border p-4 border-black border- mx-auto md:mx-0 ">
                 <div>
-                    <img src={UIUX} className=" w-[40px] h-[40px] border border-black" alt="" />
-                    <p className="mt-4 font-medium" >UI/UX Design</p>
+                    <img src={Practice} className=" w-[40px] h-[40px] border border-black" alt="" />
+                    <p className="mt-4 font-medium" >Practical Learning</p>
                     <p className=" font-light text-[13px] mt-3">
                         Expand your skill set and create visually appeading, user-friendly interfaces that leave a lasting impression on users 
                     </p>
