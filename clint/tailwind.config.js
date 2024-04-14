@@ -6,8 +6,19 @@ export default {
   ],
   theme: {
     extend: {
+      animation: {
+        scroll:
+          "scroll var(--animation-duration, 40s) var(--animation-direction, forwards) linear infinite",
+      },
       fontFamily : {
         Unbounded : ["Unbounded"]
+      },
+      keyframes: {
+        scroll: {
+          to: {
+            transform: "translate(calc(-50% - 1rem))",
+          },
+        },
       },
       screens: {
         '1000px': '1000px',
@@ -22,5 +33,22 @@ export default {
       
     },
   },
-  plugins: [],
+  plugins: [addVariablesForColors],
+}
+
+// Assuming flattenColorPalette is defined elsewhere or you have to define it
+function flattenColorPalette(colorPalette) {
+  // Placeholder implementation - you should replace this with actual logic
+  return colorPalette;
+}
+
+function addVariablesForColors({ addBase, theme }) {
+  let allColors = flattenColorPalette(theme("colors"));
+  let newVars = Object.fromEntries(
+    Object.entries(allColors).map(([key, val]) => [`--${key}`, val])
+  );
+
+  addBase({
+    ":root": newVars,
+  });
 }
