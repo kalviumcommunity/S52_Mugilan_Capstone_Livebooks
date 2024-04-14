@@ -4,13 +4,13 @@ import { Link } from 'react-router-dom'
 function Hero() {
   return (
     <>
-    <div className='grid grid-flow-row grid-cols-1 800px:h-[550px] border border-b border-black  font-Unbounded 800px:grid-cols-2  '>
+    <div className='grid grid-flow-row grid-cols-1 800px:h-[550px] border border-b border-black  font-Unbounded  800px:grid-cols-2  '>
 
         <div className=' border-b  order-1 min-h-[350px] 800px:h-full bg-[#FEC901]'>
 
         </div>
 
-        <div className=' flex flex-col items-center min-h-[350px] 800px:border-r border-black 800px:h-full  justify-between 800px:items-start px-7 1300px:px-[6rem] 1000px:pr-14 py-5 gap-7 '>
+        <div className=' flex flex-col items-center min-h-[350px] 800px:border-r border-black 800px:h-full justify-between 800px:items-start px-7 1300px:px-[6rem] 1300px:py-[3rem] 1000px:pr-14 py-5 gap-7 '>
             <h1 className=' text-[30px] 1000px:text-[44px] 1400px:text-[45px] text-center font-medium 800px:text-left 800px:text-[34px] 1500px:text-[50px] '>
                 Empowering Lifelong Learning for a better You
             </h1>

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import NavItems from "../utils/NavItems"
-import HambarganMenu from "../assets/Hamburger Menu.svg"
+import NavItems from "../../utils/NavItems"
+import HambarganMenu from "../../assets/Icons/Hamburger Menu.svg"
 
 function Header({ open, setOpen, activeItem }) {
   const [active, setActive] = useState(false);
@@ -67,12 +67,12 @@ function Header({ open, setOpen, activeItem }) {
 
             <div className="h-[80px] hidden 800px:block">
                 <div className=" font-Unbounded flex items-center h-full ">
-                    <div className="px-4 h-[80px] border-x border-black flex items-center ">
+                    <div className="px-4 h-[60px] border-x border-black flex items-center ">
                         <Link to='/login'>
                             Login
                         </Link>
                     </div>
-                    <div className="px-4 hidden 1000px:flex border-r border-black text-white h-[80px]  text-center  items-center  bg-black">
+                    <div className="px-4 hidden 1000px:flex border-r border-black text-white h-[60px]  text-center  items-center  bg-black">
                         <Link to='/getstart'>
                             Get Started
                         </Link>
