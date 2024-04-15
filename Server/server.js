@@ -1,4 +1,3 @@
-
 import { app } from "./app.js";
 import dotenv from "dotenv";
 import { v2 as cloudinary } from "cloudinary";

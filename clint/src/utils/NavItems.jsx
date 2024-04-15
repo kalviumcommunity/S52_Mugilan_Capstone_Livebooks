@@ -15,10 +15,6 @@ export const navItemsData = [
     url: "/courses",
   },
   {
-    name: "Blog",
-    url: "/blog",
-  },
-  {
     name: "Contact",
     url: "/contact",
   },
