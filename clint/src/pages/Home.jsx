@@ -4,7 +4,6 @@ import Header from "../Components/HomepageComponents/Header";
 import Hero from "../Components/HomepageComponents/Hero";
 import BrowesCollection from "../Components/HomepageComponents/BrowesCollection";
 import Hero2 from "../Components/HomepageComponents/Hero2";
-import { EmblaCarousel } from "../Components/HomepageComponents/Carosul";
 import AddvertisingComponent from "../Components/HomepageComponents/AddvertisingComponent";
 import Alumini from "../Components/HomepageComponents/Alumini";
 import StudentsCompany from "../Components/HomepageComponents/StudentsCompany";
