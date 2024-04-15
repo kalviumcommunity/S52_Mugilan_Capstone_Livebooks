@@ -84,7 +84,7 @@ routes.get(
   })
 );
 
-// creating new cource
+// creating new cource  --admin
 routes.post(
   "/courses/paid",
   isAutheticated,
