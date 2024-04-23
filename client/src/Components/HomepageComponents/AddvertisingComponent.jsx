@@ -5,7 +5,7 @@ function AddvertisingComponent() {
     <div className="bg-[#F5F2EB] mt-20 py-5 100px:px-10 1000px:p-20 1000px:pt-5 border-y border-black">
       
       <div className=" flex justify-center items-center flex-col">
-      <div className=" text-center w-full text-[25px] font-medium 1000px:text-left 1000px:text-[30px] p-5">
+      <div className=" text-center w-full text-[24px] 1000px:font-medium 1000px:text-left 1000px:text-[30px] p-5">
         What Hogwarts Offers You
       </div>
         <div className="mt-10  grid grid-cols-1 1000px:grid-cols-3 max-w-[1300px] border ">

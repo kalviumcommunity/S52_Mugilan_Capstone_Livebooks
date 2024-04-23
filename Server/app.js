@@ -27,7 +27,7 @@ app.use(
   })
 );
 
-app.use("/api", router, orderRouter, routes, notificationRoutes, analyticsRoutes, layoutRoutes);
+app.use("/api/v1", router, orderRouter, routes, notificationRoutes, analyticsRoutes, layoutRoutes);
 
 // test the routes
 

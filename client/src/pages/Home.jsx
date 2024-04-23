@@ -7,8 +7,9 @@ import Hero2 from "../Components/HomepageComponents/Hero2";
 import AddvertisingComponent from "../Components/HomepageComponents/AddvertisingComponent";
 import Alumini from "../Components/HomepageComponents/Alumini";
 import StudentsCompany from "../Components/HomepageComponents/StudentsCompany";
-import {InfiniteMovingCardsDemo} from "../Components/HomepageComponents/reviews"
 import Footer from "../Components/Footer";
+import { InfiniteMovingCardsDemo } from "../Components/HomepageComponents/reviews";
+
 function Home() {
   const [open, setOpen] = useState(false);
   const [activeItem, setactiveItem] = useState(0);
@@ -27,7 +28,8 @@ function Home() {
       <AddvertisingComponent />
       <StudentsCompany />
       <InfiniteMovingCardsDemo />
-      <Footer/>
+      <Footer />
+
     </div>
   );
 }

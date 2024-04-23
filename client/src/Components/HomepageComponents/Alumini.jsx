@@ -10,7 +10,7 @@ function Alumini() {
     <div>
       <div className="mt-24 p-5">
         <div className=" flex items-center justify-center">
-          <div className=" text-[20px] text-center font-medium 1100px:text-[25px] 1400px:text-[30px] ">
+          <div className=" text-[24px] text-center 1000px:font-medium 1100px:text-[25px] 1400px:text-[30px] ">
             LEARN THE BEST FROM THE ALUMNI OF
           </div>
         </div>

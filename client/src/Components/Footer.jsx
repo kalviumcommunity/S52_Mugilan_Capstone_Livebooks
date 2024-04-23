@@ -2,7 +2,7 @@ import React from "react";
 import send from "../assets/Icons/Vector.png";
 function Footer() {
   return (
-    <div className="">
+    <div className="sticky top-0">
       <div className="w-full h-auto 1000px:h-[400px] 1000px:p-12 grid grid-cols-1 1000px:grid-cols-3 bg-[#DDDEEF] p-10 ">
         <div className=" grid grid-cols-1 gap-10 1000px:grid-cols-2 1000px:col-span-2 1000px:order-1">
           {/* 1st box */}
