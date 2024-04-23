@@ -7,7 +7,7 @@ export function InfiniteMovingCardsDemo() {
   return (
     <div className=" mt-24 ">
       <div className=" flex justify-center items-center">
-        <div className="text-[20px] max-w-[600px] 1000px:text-[30px] text-center p-4 px-[5p]text-center">
+        <div className="text-[24px] 1000px:font-medium max-w-[600px] 1000px:text-[30px] text-center p-4 px-[5p]text-center">
           Reviews from our students in all over the world
         </div>
       </div>

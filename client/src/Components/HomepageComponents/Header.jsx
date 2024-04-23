@@ -73,7 +73,7 @@ function Header({ open, setOpen, activeItem }) {
                         </Link>
                     </div>
                     <div className="px-4 hidden 1000px:flex border-r border-black text-white h-[60px]  text-center  items-center  bg-black">
-                        <Link to='/getstart'>
+                        <Link to='/getstarted'>
                             Get Started
                         </Link>
                     </div>

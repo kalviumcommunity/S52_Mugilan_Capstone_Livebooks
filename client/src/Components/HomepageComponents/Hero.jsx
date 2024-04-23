@@ -18,7 +18,7 @@ function Hero() {
             Access a wealth of knowledge anytime, anywhere with our e-learning platform
             .Engage in interactive lessons, quizzes, and discussions tailored to your learning needs.
             </p>
-            <Link to='/getstart' className=' 1000px:px-5 1000px:py-4 py-2 px-3 text-white bg-black'>
+            <Link to='/getstarted' className=' 1000px:px-5 1000px:py-4 py-2 px-3 text-white bg-black'>
                 Get Started
             </Link>
         </div>

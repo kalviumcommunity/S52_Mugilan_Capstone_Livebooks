@@ -7,11 +7,11 @@ function BrowesCollection() {
   return (
     <div className="content-center flex justify-center font-Unbounded mt-8 800px:px-5 1400px:px-16">
       <div className=" min-w-full">
-        <div className="text-[24px] text-center 800px:text-left 1000px:text-[30px] 1000px:font-medium  ">
+        <div className="text-[24px] 1400px:text-[30px] px-5 text-center 800px:text-left 1000px:text-[30px] 1000px:font-medium  ">
           Browse Top Essential Career Courses
         </div>
 
-        <div className="grid grid-cols-1 800px:grid-cols-2 1100px:grid-cols-3 gap-10 1500px:grid-cols-4 justify-between py-8">
+        <div className="grid grid-cols-1 justify-center items-center 800px:grid-cols-2 1100px:grid-cols-3 gap-10 1500px:grid-cols-4 800px:justify-between py-8">
             
             <div className="w-[22rem] h-[17rem] rounded-md bg-[#87A1EC] border p-4 border-black border- mx-auto md:mx-0 ">
                 <div>
@@ -19,7 +19,6 @@ function BrowesCollection() {
                     <p className="mt-4 font-medium" >UI/UX Design</p>
                     <p className=" font-light text-[13px] mt-3">
                         Expand your skill set and create visually appeading, user-friendly interfaces that leave a lasting impression on users 
-                
                     </p>
                     <p className=" mt-5 ">
                         Tags

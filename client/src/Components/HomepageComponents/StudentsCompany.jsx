@@ -3,7 +3,7 @@ import companyImage from "../../assets/University /Company.png"
 export default function StudentsCompany() {
   return (
     <div className=' mt-24'>
-        <div className=' text-[20px] p-4 text-center 1000px:text-[30px]'>
+        <div className=' text-[24px] p-4 1000px:font-medium text-center 1000px:text-[30px]'>
         Our Students Hired form to Most company
         </div>
         <div className='mt-5 p-3 flex justify-center items-center' >
