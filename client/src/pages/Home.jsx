@@ -9,8 +9,11 @@ import Alumini from "../Components/HomepageComponents/Alumini";
 import StudentsCompany from "../Components/HomepageComponents/StudentsCompany";
 import Footer from "../Components/Footer";
 import { InfiniteMovingCardsDemo } from "../Components/HomepageComponents/reviews";
+import { useSelector } from "react-redux";
 
 function Home() {
+  const auth = useSelector((state) => state.auth)
+  console.log(auth)
   const [open, setOpen] = useState(false);
   const [activeItem, setactiveItem] = useState(0);
   return (

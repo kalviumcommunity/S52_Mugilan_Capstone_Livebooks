@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Heading from "../utils/Heading";
 import { Link, useNavigate } from "react-router-dom";
 import signupImage from "../assets/Icons/signupimage.png";
@@ -6,6 +6,8 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { AiOutlineEyeInvisible, AiOutlineEye } from "react-icons/ai";
 import { FcGoogle } from "react-icons/fc";
+import { useLoginMutation } from "../../redux/features/auth/authApi";
+import toast from "react-hot-toast";
 
 const schema = Yup.object().shape({
   email: Yup.string()
@@ -17,18 +19,27 @@ const schema = Yup.object().shape({
 function Login() {
   const [show, setShow] = useState(false);
   const navigate = useNavigate();
+  const [login,{isSuccess,data, error}] = useLoginMutation()
 
   const formik = useFormik({
     initialValues: { email: "", password: "" },
     validationSchema: schema,
     onSubmit: async ({ email, password }) => {
       if (!formik.errors.email && !formik.errors.password) {
-        navigate("/");
-      } else {
-        // Stay on the same page
-      }
+        await login(email,password)
+      } 
     },
   });
+
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success("Login successful");
+      navigate("/");
+    }
+    if(error){
+        toast.error(error.data.message);
+      }
+  })
 
   const { errors, touched, values, handleChange, handleSubmit, handleBlur } =
     formik;

@@ -25,7 +25,7 @@ const sendMail = async (options) => {
   const html = await ejs.renderFile(templatePath, data);
 
   const mailOptions = {
-    from: process.env.SMTP_MAIL,
+    from:"support@Hogwots",
     to: email,
     subject,
     html,
