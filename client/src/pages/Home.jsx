@@ -9,11 +9,16 @@ import Alumini from "../Components/HomepageComponents/Alumini";
 import StudentsCompany from "../Components/HomepageComponents/StudentsCompany";
 import Footer from "../Components/Footer";
 import { InfiniteMovingCardsDemo } from "../Components/HomepageComponents/reviews";
+<<<<<<< HEAD
 import { useSelector } from "react-redux";
 
 function Home() {
   const auth = useSelector((state) => state.auth)
   console.log(auth)
+=======
+
+function Home() {
+>>>>>>> f661e90b4b1a9eea1c492fc42f6a217a1cd2a06c
   const [open, setOpen] = useState(false);
   const [activeItem, setactiveItem] = useState(0);
   return (

@@ -110,7 +110,11 @@ router.post(
       const data = { user: { name: user.name }, activationCode };
 
       const html = await ejs.renderFile(
+<<<<<<< HEAD
         path.join(__dirname, "../mails/activation-mail.ejs"),
+=======
+        path.join(__dirname, "./mails/activation-mail.ejs"),
+>>>>>>> f661e90b4b1a9eea1c492fc42f6a217a1cd2a06c
         data
       );
 
@@ -127,10 +131,17 @@ router.post(
           activationKey: activationKey.token,
         });
       } catch (err) {
+<<<<<<< HEAD
         return next(new ErrorHandler(err, 400));
       }
     } catch (error) {
       return next(new ErrorHandler(error, 400));
+=======
+        return next(new ErrorHandler(err.message, 400));
+      }
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 400));
+>>>>>>> f661e90b4b1a9eea1c492fc42f6a217a1cd2a06c
     }
   })
 );
@@ -189,7 +200,10 @@ router.post(
         message: "email registration successfully",
       });
     } catch (error) {
+<<<<<<< HEAD
       console.log(error)
+=======
+>>>>>>> f661e90b4b1a9eea1c492fc42f6a217a1cd2a06c
       return next(new ErrorHandler(error.message, 400));
     }
   })
