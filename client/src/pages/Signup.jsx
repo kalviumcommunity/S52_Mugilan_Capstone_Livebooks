@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+
+import React, { useEffect, useState } from "react";
 import Heading from "../utils/Heading";
 import { Link, useNavigate } from "react-router-dom";
 import signupImage from "../assets/Icons/signupimage.png";
@@ -6,6 +7,8 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { AiOutlineEyeInvisible, AiOutlineEye } from "react-icons/ai";
 import { FcGoogle } from "react-icons/fc";
+import { useRegisterMutation } from "../../redux/features/auth/authApi";
+import toast,{Toaster} from "react-hot-toast";
 
 const schema = Yup.object().shape({
  name: Yup.string().required("Please enter your name"),
@@ -15,19 +18,37 @@ const schema = Yup.object().shape({
  password: Yup.string().required("Please enter your password!").min(6),
 });
 
-function Login() {
+
+function Signup() {
  const [show, setShow] = useState(false);
+ const [register,{ data, error,isSuccess} ] = useRegisterMutation()
  const navigate = useNavigate();
+
+
+ 
+ useEffect(() => {
+  if (isSuccess) {
+
+    // Display success toast when registration is successful
+    toast.success(data.message || "Registration successful")
+    // Navigate to the "/verification" route
+    navigate("/verification");
+  }
+  if (error) {
+    // Display error toast if there is an error
+   toast.error(error.data.message )
+  }
+}, [isSuccess, error]);
+
 
  const formik = useFormik({
    initialValues: { name: "", email: "", password: "" },
    validationSchema: schema,
    onSubmit: async ({ email, password, name }) => {
-     if (!formik.errors.email && !formik.errors.name && !formik.errors.password) {
-       navigate("/verification");
-     } else {
-       navigate("/signup");
-     }
+    const data ={
+      name, email, password
+    }
+    await register(data)
    },
  });
 
@@ -39,6 +60,8 @@ function Login() {
 
  return (
    <div className=" bg-[#F5F2EB] h-screen w-full">
+
+    <div><Toaster/></div>
      <Heading
        title="Signup -Hogwarts"
        description="Signup to access our resourses"
@@ -128,7 +151,9 @@ function Login() {
                  placeholder="Password  eg: Joe"
                />
                <div
-                 className="absolute cursor-pointer top-3 right-8"
+
+                 className="absolute cursor-pointer top-[10px] right-8"
+
                  onClick={togglePasswordVisibility}
                >
                  {!show ? (
@@ -189,5 +214,4 @@ function Login() {
    </div > 
  )
 }
-
-export default Login;
+export default Signup;
