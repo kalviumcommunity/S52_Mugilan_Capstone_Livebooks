@@ -1,8 +1,5 @@
-<<<<<<< HEAD
+
 import React, { useEffect, useState } from "react";
-=======
-import React, { useState } from "react";
->>>>>>> f661e90b4b1a9eea1c492fc42f6a217a1cd2a06c
 import Heading from "../utils/Heading";
 import { Link, useNavigate } from "react-router-dom";
 import signupImage from "../assets/Icons/signupimage.png";
@@ -10,11 +7,8 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { AiOutlineEyeInvisible, AiOutlineEye } from "react-icons/ai";
 import { FcGoogle } from "react-icons/fc";
-<<<<<<< HEAD
 import { useRegisterMutation } from "../../redux/features/auth/authApi";
 import toast,{Toaster} from "react-hot-toast";
-=======
->>>>>>> f661e90b4b1a9eea1c492fc42f6a217a1cd2a06c
 
 const schema = Yup.object().shape({
  name: Yup.string().required("Please enter your name"),
@@ -24,7 +18,7 @@ const schema = Yup.object().shape({
  password: Yup.string().required("Please enter your password!").min(6),
 });
 
-<<<<<<< HEAD
+
 function Signup() {
  const [show, setShow] = useState(false);
  const [register,{ data, error,isSuccess} ] = useRegisterMutation()
@@ -47,28 +41,14 @@ function Signup() {
 }, [isSuccess, error]);
 
 
-=======
-function Login() {
- const [show, setShow] = useState(false);
- const navigate = useNavigate();
-
->>>>>>> f661e90b4b1a9eea1c492fc42f6a217a1cd2a06c
  const formik = useFormik({
    initialValues: { name: "", email: "", password: "" },
    validationSchema: schema,
    onSubmit: async ({ email, password, name }) => {
-<<<<<<< HEAD
     const data ={
       name, email, password
     }
     await register(data)
-=======
-     if (!formik.errors.email && !formik.errors.name && !formik.errors.password) {
-       navigate("/verification");
-     } else {
-       navigate("/signup");
-     }
->>>>>>> f661e90b4b1a9eea1c492fc42f6a217a1cd2a06c
    },
  });
 
@@ -80,10 +60,8 @@ function Login() {
 
  return (
    <div className=" bg-[#F5F2EB] h-screen w-full">
-<<<<<<< HEAD
+
     <div><Toaster/></div>
-=======
->>>>>>> f661e90b4b1a9eea1c492fc42f6a217a1cd2a06c
      <Heading
        title="Signup -Hogwarts"
        description="Signup to access our resourses"
@@ -173,11 +151,9 @@ function Login() {
                  placeholder="Password  eg: Joe"
                />
                <div
-<<<<<<< HEAD
+
                  className="absolute cursor-pointer top-[10px] right-8"
-=======
-                 className="absolute cursor-pointer top-3 right-8"
->>>>>>> f661e90b4b1a9eea1c492fc42f6a217a1cd2a06c
+
                  onClick={togglePasswordVisibility}
                >
                  {!show ? (
@@ -238,9 +214,4 @@ function Login() {
    </div > 
  )
 }
-
-<<<<<<< HEAD
 export default Signup;
-=======
-export default Login;
->>>>>>> f661e90b4b1a9eea1c492fc42f6a217a1cd2a06c
