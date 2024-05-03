@@ -9,7 +9,7 @@ import { AiOutlineEyeInvisible, AiOutlineEye } from "react-icons/ai";
 import { FcGoogle } from "react-icons/fc";
 
 import { useLoginMutation } from "../../redux/features/auth/authApi";
-import toast from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 
 
 const schema = Yup.object().shape({
@@ -22,8 +22,7 @@ const schema = Yup.object().shape({
 function Login() {
   const [show, setShow] = useState(false);
   const navigate = useNavigate();
-
-  const [login,{isSuccess,data, error}] = useLoginMutation()
+  const [login,{isSuccess,error,data}] = useLoginMutation()
 
 
   const formik = useFormik({
@@ -31,20 +30,32 @@ function Login() {
     validationSchema: schema,
     onSubmit: async ({ email, password }) => {
       if (!formik.errors.email && !formik.errors.password) {
-        await login(email,password)
+        const data = {
+          email,
+          password,
+        }
+        await login(data)
       } 
     },
   });
 
   useEffect(() => {
     if (isSuccess) {
-      toast.success("Login successful");
-      navigate("/");
-    }
-    if(error){
-        toast.error(error.data.message);
+      console.log(data)
+      const com = toast.success("Login successful", {
+        duration:1000
+      });
+      if (com){
+        navigate('/')
       }
-  })
+
+    }
+    if (error) {
+      const message = error.data.message
+      toast.error(message);
+    }
+  }, [isSuccess, error]);
+  
 
   const { errors, touched, values, handleChange, handleSubmit, handleBlur } =
     formik;
@@ -55,6 +66,7 @@ function Login() {
 
   return (
     <div className=" bg-[#F5F2EB] h-screen w-full">
+      <Toaster/>
       <Heading
         title="Login -Hogwarts"
         description="Login to access our resourses"
