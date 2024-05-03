@@ -16,7 +16,7 @@ import layoutRoutes from "./routes/layout.router.js";
 app.use(
   cors({
 
-    origin: ['http://localhost:5173'],
+    origin: process.env.ORIGIN,
     credentials: true,
 
   })
