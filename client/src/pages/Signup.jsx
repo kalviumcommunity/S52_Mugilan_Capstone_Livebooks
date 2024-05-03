@@ -15,7 +15,7 @@ const schema = Yup.object().shape({
  email: Yup.string()
    .email("Invalid email!")
    .required("Please enter your email!"),
- password: Yup.string().required("Please enter your password!").min(6),
+ password: Yup.string().required("Please enter your password!").min(6), 
 });
 
 
