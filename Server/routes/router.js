@@ -75,7 +75,7 @@ router.put(
   "/update-user-role",
   isAutheticated,
   authorizeRole("admin"),
-  CatchAsyncError(async (req, res, nect) => {
+  CatchAsyncError(async (req, res, next) => {
     try {
       const { id, role } = req.body;
       updateUserRoleService(res, id, role);
@@ -96,7 +96,7 @@ router.post(
       if (isEmailExist) {
         return next(new ErrorHandler("Email Already Exist", 400));
       }
-      const hashedPassword = await bcrypt.hash(password, 10);
+      const hashedPassword = await bcrypt.hash(password,10);
       const user = {
         name,
         email,
@@ -212,9 +212,9 @@ router.post(
       if (!user) {
         return next(new ErrorHandler("Invalid user Email"), 400);
       }
-
-      const isPasswordVerify = bcrypt.compare(password, user.password);
-
+      console.log(user.email, user.password)
+      const isPasswordVerify = await bcrypt.compare(password, user.password);
+        console.log(isPasswordVerify)
       if (!isPasswordVerify) {
         return next(new ErrorHandler("Invalid password"), 400);
       }

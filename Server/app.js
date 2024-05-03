@@ -12,23 +12,24 @@ import notificationRoutes from "./routes/notification.routes.js";
 import analyticsRoutes from "./routes/analytics.routes.js";
 import layoutRoutes from "./routes/layout.router.js";
 // body parser
+
+app.use(
+  cors({
+
+    origin: ['http://localhost:5173'],
+    credentials: true,
+
+  })
+);
 app.use(express.json());
 
-app.use(cors());
+
 
 // cookies parser
 app.use(cookieParser());
 
 // using cors for our http request
 
-app.use(
-  cors({
-
-    origin: ['http://localhost:3000'],
-    credentials: true,
-
-  })
-);
 
 app.use("/api/v1", router, orderRouter, routes, notificationRoutes, analyticsRoutes, layoutRoutes);
 
