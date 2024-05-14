@@ -87,7 +87,7 @@ orderRouter.post(
         },
       };
 
-      const filePath = path.join(__dirname, "./mails/order-confirmation.ejs");
+      const filePath = path.join(__dirname, "../mails/order-confirmation.ejs");
       const html = await ejs.renderFile(filePath, mailData);
 
       try {
@@ -109,10 +109,9 @@ orderRouter.post(
           message: `You have a new order for the course ${landingPageCourses.name}`,
         });
 
-        if (landingPageCourses.purchaces) {
+        if (landingPageCourses.purchaces >=0) {
           landingPageCourses.purchaces = landingPageCourses.purchaces + 1;
-        } else {
-          landingPageCourses.purchaces;
+          console.log(landingPageCourses.purchaces)
         }
 
         await landingPageCourses.save();
