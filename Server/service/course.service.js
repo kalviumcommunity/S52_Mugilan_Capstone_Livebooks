@@ -32,7 +32,7 @@ export const getAllStaticCoursesService = async(res) => {
     })
 }
 export const getAllPaidCoursesService = async(res) => {
-    const course = await paidCourse.find().sort({createdAt : -1})
+    const course = await paidCourse.find().sort({createdAt : -1}).select("- module")
     res.status(201).json({
         success : true,
         course
@@ -45,6 +45,7 @@ export const getAllFreeCoursesService = async(res) => {
         course
     })
 }
+
 
   
 

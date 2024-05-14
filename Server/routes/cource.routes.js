@@ -8,7 +8,7 @@ import sendMail from "../utils/sendMail.js";
 import bcrypt from "bcryptjs";
 import cloudinary from "cloudinary";
 import { CatchAsyncError } from "../middlewar/catchAsynErrors.js";
-import { authorizeRole, isAutheticated } from "../middlewar/auth.js";
+import { authorizeRole, isAutheticated, isAutheticatedPaid } from "../middlewar/auth.js";
 import { redis } from "../utils/redis.js";
 import mongoose, { Error } from "mongoose";
 const __filename = fileURLToPath(import.meta.url);
@@ -69,6 +69,7 @@ routes.get(
     }
   })
 );
+
 // get all the static course  -- admin
 
 routes.get(
@@ -509,6 +510,7 @@ routes.get(
 
 routes.get(
   "/get-all-paid-courses",
+  isAutheticatedPaid,
   CatchAsyncError(async (req, res, next) => {
     try {
       const isCastExist = await redis.get("allPaidCourse");

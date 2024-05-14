@@ -8,10 +8,8 @@ import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import GetStarted from "./pages/GetStarted";
 import Verification from "./pages/Verification";
-import { Providers } from "./Provider";
 function App() {
   return (
-        <Providers >
     <div className="w-screen 2xl:max-w-[2000px] font-Unbounded">
       
     <BrowserRouter>
@@ -31,7 +29,6 @@ function App() {
 
     </BrowserRouter>
     </div>
-      </Providers>
   );
 }
 

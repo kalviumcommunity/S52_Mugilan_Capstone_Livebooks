@@ -1,255 +1,263 @@
 import mongoose from "mongoose";
-
 // review schema
 
-const reviewSchema = new mongoose.Schema({
-  user: Object,
-  rating: {
-    type: Number,
-    default: 0,
+const reviewSchema = new mongoose.Schema(
+  {
+    user: Object,
+    rating: {
+      type: Number,
+      default: 0,
+    },
+    comment: String,
   },
-  comment: String,
-}, { timestamps: true });
-
-
-
+  { timestamps: true }
+);
 
 // link Schema
 
-const linkSchema = new mongoose.Schema({
-  title: String,
-  url: String,
-}, { timestamps: true });
-
-
+const linkSchema = new mongoose.Schema(
+  {
+    title: String,
+    url: String,
+  },
+  { timestamps: true }
+);
 
 // commentSchema
 
-const commentSchema = new mongoose.Schema({
-  user: Object,
-  question: String,
-  questionReplays: [Object],
-}, { timestamps: true });
-
-
-
+const commentSchema = new mongoose.Schema(
+  {
+    user: Object,
+    question: String,
+    questionReplays: [Object],
+  },
+  { timestamps: true }
+);
 
 // landing page schema
 
-const landingPageCourses = new mongoose.Schema({
-    thumbnail : {
-        public_id : {
-        
-            type: String
-        },
-        url :{
-            type:String,
-      
-        }
+const landingPageCourses = new mongoose.Schema(
+  {
+    thumbnail: {
+      public_id: {
+        type: String,
+      },
+      url: {
+        type: String,
+      },
     },
-    name : {
-        type:String,
-        require:true,
+    name: {
+      type: String,
+      require: true,
     },
-    phase : {
-        require : true,
-        type :[Object]},
-    price : {
-        type:Number,
-        require : true,
+    phase: {
+      require: true,
+      type: [Object],
     },
-    estimatedPrice:  {
-        type:Number,
-        require : true,
+    price: {
+      type: Number,
+      require: true,
     },
-    language:  {
-        type:String,
-        require : true,
+    estimatedPrice: {
+      type: Number,
+      require: true,
+    },
+    language: {
+      type: String,
+      require: true,
     },
     tags: {
-        require : true,
-        type :[Object]
+      require: true,
+      type: [Object],
     },
     benifits: {
-        require : true,
-        type :[Object]
+      require: true,
+      type: [Object],
     },
     preRequirement: {
-        type:String,
-        require : true,
+      type: String,
+      require: true,
     },
     review: {
-        require : true,
-        type :[reviewSchema]
+      require: true,
+      type: [reviewSchema],
     },
-    rating :{
-        type:Number,
-        default:0
+    rating: {
+      type: Number,
+      default: 0,
     },
-    purchaces : {
-        type : Number,
-        default : 0
+    purchaces: {
+      type: Number,
+      default: 0,
     },
     level: {
-        type:String,
-        require : true,
+      type: String,
+      require: true,
     },
-    type : {
-        type: String,
-
+    type: {
+      type: String,
     },
-    courseId:{
-        type:Object,
-        require: true
+    courseId: {
+      type: Object,
+      require: true,
     },
-    question : [commentSchema]
-
-},  { timestamps: true });
-
-
+    question: [commentSchema],
+  },
+  { timestamps: true }
+);
 
 // Quiz Question Schema
 const quizQuestionSchema = new mongoose.Schema({
-    question: { type: String, required: true },
-    options: [{ type: String, required: true }],
-    answer: { type: String, required: true },
-  });
-  
-// Quiz Schema
-const quizSchema = new mongoose.Schema({
-title: { type: String, required: true },
-questions: [quizQuestionSchema],
+  question: { type: String, required: true },
+  options: [{ type: String, required: true }],
+  answer: { type: String, required: true },
+});
+
+const videoSchema = new mongoose.Schema({
+  type: Object,
+  _id: { type: mongoose.Types.ObjectId, auto: true },
+  url: { type: String },
 });
 
 // video Schema
 
-const courseVideoSchema = new mongoose.Schema({
-  videoUrl: String,
-  videoThumbnail: Object,
-  title: String,
-  videoSelection: String,
-  videoDescribtion: String,
-  videoLength : Number,
-  videoPlayer : String,
-
-} , { timestamps: true });
-
+const courseVideoSchema = new mongoose.Schema(
+  {
+    videoUrl: String,
+    videoThumbnail: Object,
+    title: String,
+    videoSelection: String,
+    videoDescribtion: String,
+    videoLength: Number,
+    videoPlayer: String,
+  },
+  { timestamps: true }
+);
 
 // Assignment Submission Schema
 const assignmentSubmissionSchema = new mongoose.Schema({
-    student: [Object],
-    submittedAt: { type: Date, default: Date.now },
-    file: { type: String, required: true },
-  });
-  
-  // Assignment Schema
-const assignmentSchema = new mongoose.Schema({
-    title: { type: String, required: true },
-    description: { type: String, required: true },
-    dueDate: { type: Date, required: true },
-    submissions: [assignmentSubmissionSchema],
-  });
-  
-  
-  // Cheat Sheet Schema
-const cheatSheetSchema = new mongoose.Schema({
-    heading: String,
-    subHeading: String,
-    content: String,
-  });
+  student: [Object],
+  submittedAt: { type: Date, default: Date.now },
+  file: { type: String, required: true },
+});
 
-  // Module Schema
+const assignmentShema = new mongoose.Schema({
+  type: Object,
+  _id: { type: mongoose.Types.ObjectId, auto: true },
+  title: { type: String, required: true },
+  description: { type: String, required: true },
+  dueDate: { type: Date, required: true },
+  submissions: [assignmentSubmissionSchema],
+});
+
+const cheatSheetsSchema = new mongoose.Schema({
+  type: Object,
+  _id: { type: mongoose.Types.ObjectId, auto: true },
+  heading: String,
+  subHeading: String,
+  content: String,
+});
+
+const quizzesSchema = new mongoose.Schema({
+  type: Object,
+  _id: { type: mongoose.Types.ObjectId, auto: true },
+  title: { type: String, required: true },
+  questions: [quizQuestionSchema],
+});
+
+// Module Schema
 const moduleSchema = new mongoose.Schema({
-    heading: { type: String },
-    subHeading: { type: String},
-    quizzes: [quizSchema],
-    assignments: [assignmentSchema],
-    cheatSheets: [cheatSheetSchema],
-    links : [linkSchema],
-    questions : [commentSchema]
-  });
+  heading: { type: String },
+  subHeading: { type: String },
+  video: videoSchema,
+  quizzes: quizzesSchema,
+  assignments: assignmentShema,
+  cheatSheets: cheatSheetsSchema,
+  links: [linkSchema],
+  questions: [commentSchema],
+});
 
 // paid cource schema
 
-const livebooksPaidCourse = new mongoose.Schema({
-
-    name : {
-        type:String,
-        require:true,
+const livebooksPaidCourse = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      require: true,
     },
     description: {
-        type:String,
-        require : true,
+      type: String,
+      require: true,
     },
-    thumbnail : {
-        public_id : {
-            require : true,
-            type: String
-        },
-        url :{
-            type:String,
-            require:true
-        }
+    thumbnail: {
+      public_id: {
+        require: true,
+        type: String,
+      },
+      url: {
+        type: String,
+        require: true,
+      },
     },
-    tag :{
-        type :String,
-        require :true
+    tag: {
+      type: String,
+      require: true,
     },
-    level : {
-        type :String,
-        require:true
-        
+    level: {
+      type: String,
+      require: true,
     },
-    module : [moduleSchema],
-},   { timestamps: true })
-
-
+    module: [moduleSchema],
+  },
+  { timestamps: true }
+);
 
 const moduleFreeSchema = new mongoose.Schema({
-    heading: { type: String },
-    subHeading: { type: String},
-    quizzes: [quizSchema],
-    cheatSheets: [cheatSheetSchema],
-  });
+  heading: { type: String },
+  subHeading: { type: String },
+  video: videoSchema,
+  quizzes: quizzesSchema,
+  assignments: assignmentShema,
+  cheatSheets: cheatSheetsSchema,
+  links: [linkSchema],
+  questions: [commentSchema],
+});
 
+// free cource
 
-
-// free cource 
-
-const livebooksFreeCourse = new mongoose.Schema({
-
-    name : {
-        type:String,
-        require:true,
+const livebooksFreeCourse = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      require: true,
     },
     describtion: {
-        type:String,
-        require : true,
+      type: String,
+      require: true,
     },
-    thumbnail : {
-        public_id : {
-            type: String
-        },
-        url :{
-            type:String,
-        }
+    thumbnail: {
+      public_id: {
+        type: String,
+      },
+      url: {
+        type: String,
+      },
     },
-    tag :{
-        type :String,
-        require :true
+    tag: {
+      type: String,
+      require: true,
     },
-    level : {
-        type :String,
-        require:true
-        
+    level: {
+      type: String,
+      require: true,
     },
-    module : [moduleFreeSchema],
+    module: [moduleFreeSchema],
+  },
+  { timestamps: true }
+);
 
-},  { timestamps: true })
+const freeCourse = mongoose.model("freecourses", livebooksFreeCourse);
+const paidCourse = mongoose.model("paidcourses", livebooksPaidCourse);
+const staticCourse = mongoose.model("staticources", landingPageCourses);
 
-const freeCourse = mongoose.model('freecourses', livebooksFreeCourse)
-const paidCourse = mongoose.model('paidcourses', livebooksPaidCourse)
-const staticCourse = mongoose.model('staticources', landingPageCourses)
-
-
-export {freeCourse, paidCourse, staticCourse}
+export { freeCourse, paidCourse, staticCourse };

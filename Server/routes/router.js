@@ -46,28 +46,31 @@ router.get(
 );
 
 // Contact us info of user
-router.post("/contact-us", CatchAsyncError(async (req, res, next) => {
-  const { name, mobileno, message } = req.body;
+router.post(
+  "/contact-us",
+  CatchAsyncError(async (req, res, next) => {
+    const { name, mobileno, message } = req.body;
 
-  if (!name || !mobileno || !message) {
-    return next(new ErrorHandler("All input fields are required", 400));
-  }
+    if (!name || !mobileno || !message) {
+      return next(new ErrorHandler("All input fields are required", 400));
+    }
 
-  if (mobileno.toString().length !== 10) {
-    return next(new ErrorHandler("Mobile number must be 10 digits", 400));
-  }
+    if (mobileno.toString().length !== 10) {
+      return next(new ErrorHandler("Mobile number must be 10 digits", 400));
+    }
 
-  if (message.trim().length === 0) {
-    return next(new ErrorHandler("Message field cannot be empty", 400));
-  }
+    if (message.trim().length === 0) {
+      return next(new ErrorHandler("Message field cannot be empty", 400));
+    }
 
-  await contactModel.create({ name, mobileno, message });
+    await contactModel.create({ name, mobileno, message });
 
-  res.status(200).json({
-    success: true,
-    message: "Contact information submitted successfully",
-  });
-}));
+    res.status(200).json({
+      success: true,
+      message: "Contact information submitted successfully",
+    });
+  })
+);
 
 // updating user role only for admin to change the user to admin
 
@@ -96,7 +99,7 @@ router.post(
       if (isEmailExist) {
         return next(new ErrorHandler("Email Already Exist", 400));
       }
-      const hashedPassword = await bcrypt.hash(password,10);
+      const hashedPassword = await bcrypt.hash(password, 10);
       const user = {
         name,
         email,
@@ -190,9 +193,44 @@ router.post(
         message: "email registration successfully",
       });
     } catch (error) {
-      console.log(error)
+      console.log(error);
       return next(new ErrorHandler(error.message, 400));
     }
+  })
+);
+
+// login the paid users
+router.post(
+  "/loginuser",
+  CatchAsyncError(async (req, res, next) => {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return next(new ErrorHandler("Please enter email and Password", 400));
+    }
+    const user = await UserModel.findOne({ email });
+
+    if (!user) {
+      return next(new ErrorHandler("Invalid user Email"), 400);
+    }
+    const isPasswordVerify = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordVerify) {
+      return next(new ErrorHandler("Invalid password"), 400);
+    }
+    // find the length of the courses
+
+
+    if (user.courses.length == 0) {
+      return next(new ErrorHandler("Please purchase course to access the resourses"), 400);
+    }
+    for (var i = 0; i < user.courses.length; i++) {
+      const paidCourses = await paidCourse.findOne({ _id: user.courses[i]._id });
+      console.log(paidCourses,"we");
+      if (!paidCourses || paidCourses == null) {
+        return next(new ErrorHandler("Please purchase course to access the resourses"), 400);
+      }
+    }
+    sendToken(user, 200, res);
   })
 );
 
@@ -212,9 +250,9 @@ router.post(
       if (!user) {
         return next(new ErrorHandler("Invalid user Email"), 400);
       }
-      console.log(user.email, user.password)
+      console.log(user.email, user.password);
       const isPasswordVerify = await bcrypt.compare(password, user.password);
-        console.log(isPasswordVerify)
+      console.log(isPasswordVerify);
       if (!isPasswordVerify) {
         return next(new ErrorHandler("Invalid password"), 400);
       }
