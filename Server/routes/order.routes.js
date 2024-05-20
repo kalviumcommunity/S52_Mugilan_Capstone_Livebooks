@@ -55,10 +55,13 @@ orderRouter.post(
       if (!course) {
         return next(new ErrorHandler("Course not Found", 404));
       }
+      const courseID = course._id
 
       const courseExist = user.courses.some((course) => {
-        return course._id.toString() === course._id.toString();
+        return course._id.toString() === courseID.toString();
       });
+      
+      console.log(courseExist, course)
 
       if (courseExist) {
         return next(

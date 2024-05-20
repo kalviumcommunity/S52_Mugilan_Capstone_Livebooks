@@ -1,12 +1,11 @@
-import { useParams } from "react-router-dom";
 import { apiSlice } from "../api/apiSlice";
 
 
-export const userApi = apiSlice.injectEndpoints({
+export const CourseAPI = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         getFreeCourses:builder.query({
             query:() => ({
-                url:"get-all-free-course",
+                url:"get-all-free-courses",
                 method:"GET",
                 credentials:"include"
             })
@@ -18,8 +17,22 @@ export const userApi = apiSlice.injectEndpoints({
                 credentials:"include"
             })
         }),
+        getPaidCourses:builder.query({
+            query:(id) => ({
+                url:`get-single-paid-course/${id}`,
+                method:"GET",
+                credentials:"include"
+            })
+        }),
+        getAllPaidCourses:builder.query({
+            query:() => ({
+                url:`get-all-paid-course`,
+                method:"GET",
+                credentials:"include"
+            })
+        }),
     }),
 
 })
 
-export const { useGetFreeCoursesQuery,useGetsingleFreeCoursesQuery } = userApi;
+export const { useGetFreeCoursesQuery,useGetsingleFreeCoursesQuery , useLazyGetPaidCoursesQuery, useGetAllPaidCoursesQuery} = CourseAPI;

@@ -50,6 +50,7 @@ routes.get(
     try {
       getAllPaidCoursesService(res);
     } catch (error) {
+      console.log("err.mugilan")
       return next(new ErrorHandler(error.message, 400));
     }
   })
@@ -105,47 +106,12 @@ routes.post(
         };
       }
 
-      // Process modules
-      const processedModules = await Promise.all(
-        courseData.module.map(async (module) => {
-          const processedVideos = await Promise.all(
-            module.videos.map(async (video) => {
-              if (video.videoThumbnail) {
-                try {
-                  const result = await cloudinary.v2.uploader.upload(
-                    video.videoThumbnail,
-                    {
-                      folder: "course-videos",
-                    }
-                  );
-                  return {
-                    ...video,
-                    videoThumbnail: {
-                      public_id: result.public_id,
-                      url: result.secure_url,
-                    },
-                  };
-                } catch (err) {
-                  console.error("Error uploading video thumbnail:", err);
-                  return video;
-                }
-              }
-              return video;
-            })
-          );
 
-          return {
-            ...module,
-            videos: processedVideos,
-          };
-        })
-      );
 
       // Create a new paid course
       const course = await paidCourse.create({
         ...courseData,
         thumbnail,
-        modules: processedModules,
       });
 
       res.status(201).json({

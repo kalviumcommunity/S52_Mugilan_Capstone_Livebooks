@@ -33,7 +33,7 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      default: "user",
+      default: "student",
       enum: ["user", "admin"], // Specify allowed values for the role field
     },
     isVerified: {
