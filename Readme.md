@@ -5,7 +5,11 @@ The e-learning platform is a comprehensive solution for both learners and mentor
 
 ## Frontend Deployment
 
+#Landing page 
 https://hogwarts.mugilans.in/
+
+#Dashboard Page
+https://dashboard.hogwarts.mugilans.in/
 
 ## Features Breakdown
 1. **Comprehensive Course Management:**
