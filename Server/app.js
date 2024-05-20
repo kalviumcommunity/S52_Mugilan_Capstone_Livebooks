@@ -15,10 +15,8 @@ import layoutRoutes from "./routes/layout.router.js";
 
 app.use(
   cors({
-
-    origin: process.env.ORIGIN,
+    origin: process.env.ORIGIN || process.env.ORIGIN2,
     credentials: true,
-
   })
 );
 app.use(express.json());
