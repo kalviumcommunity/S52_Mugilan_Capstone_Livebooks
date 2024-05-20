@@ -1,72 +1,28 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import Heading from "./utils/Heading";
-import Header from "./components/Header";
+import Header from "./components/utils/Header";
 import {
   BrowserRouter,
-  Navigate,
   Outlet,
   Route,
   Routes,
   useNavigate,
-  useParams,
 } from "react-router-dom";
-import Dashboard from "./pages/Dashboard";
-import Courses from "./pages/Courses";
+import Dashboard from "./pages/StudentPages/Dashboard";
+import Courses from "./pages/StudentPages/Courses";
 import Login from "./pages/Login";
-import SidebarCourse from "./components/SidebarCourse";
-import Settings from "./pages/Settings";
+import Settings from "./pages/StudentPages/Settings";
 import { useLoadUserQuery } from "../redux/features/api/apiSlice";
-import Loading from "./components/Loading.jsx";
+import Loading from "./components/utils/Loading.jsx";
 import { useSelector } from "react-redux";
-import { useGetFreeCoursesQuery } from "../redux/features/courses/courseApi";
-import CoursesContent from "./components/Courses.jsx/CoursesContent";
+import CoursesContent from "./components/Students/Courses.jsx/CoursesContent";
+import CourseLayout from "./components/Students/Layouts/CourseLayout";
+import FreeCourses from "./pages/AdminPages/FreeCourses";
+import PaidCourses from "./pages/AdminPages/PaidCourses";
+import Mentors from "./pages/AdminPages/Mentors";
+import Students from "./pages/AdminPages/Students";
 
-function CourseLayout() {
-  const navigate = useNavigate();
-  const auth = useSelector((state) => state.auth.user);
-  const [freeCourses, setFreeCourses] = useState([]);
-  const [selectedContent, setSelectedContent] = useState(null);
-  const [currentContent, setCurrentContent] = useState(null)
-  const { data, isSuccess, error } = useGetFreeCoursesQuery();
-
-  useEffect(() => {
-    if (isSuccess) {
-      setFreeCourses(data.course);
-      console.log(data.course);
-    } else if (error) {
-      console.log(error);
-    }
-  }, [isSuccess, error]);
-
-  useEffect(() => {
-    if (auth == "") {
-      navigate("/login");
-    }
-  }, []);
-
-  const handleContentClick = (content) => {
-    setSelectedContent(content);
-  };
-
-  console.log(selectedContent)
-
-  return (
-    <div className="flex flex-row justify-between w-full h-screen bg-[#1A1A1A]">
-      <div className=" h-full w-[350px]">
-        <SidebarCourse
-          data={freeCourses}
-          handleContentClick={handleContentClick}
-        />
-      </div>
-      <div className=" h-full w-full p-3">
-        <div className=" h-full w-full bg-[#FFFBF7] rounded-md p-3">
-          <Outlet context={[selectedContent,data]}/>
-        </div>
-      </div>
-    </div>
-  );
-}
+import CreateCourse from "./components/Admin/AddCourses";
 
 function DashboardLayout() {
   const [open, setOpen] = useState(false);
@@ -100,7 +56,20 @@ function DashboardLayout() {
 }
 
 function App() {
-  const { data: userData, isSuccess, isLoading, isError } = useLoadUserQuery({});
+  const { data: userData, isLoading } = useLoadUserQuery({});
+
+  const [role, setRole] = useState(false);
+
+  const userRole = useSelector((state) => state.auth.user?.role);
+  useEffect(() => {
+    if (userRole == "admin") {
+      setRole(true);
+    } else {
+      if (userRole == "student") {
+        setRole(false);
+      }
+    }
+  });
 
   if (isLoading) {
     return <Loading />; // Render loading component while data is loading
@@ -110,14 +79,29 @@ function App() {
     <BrowserRouter>
       <div className="w-screen 2xl:max-w-[1650px] font-Unbounded m-auto">
         <Routes>
-          <Route path="/" element={<DashboardLayout />}>
-            <Route index element={<Dashboard />} />
-            <Route path="/courses" element={<Courses />} />
-            <Route path="/settings" element={<Settings />} />
-          </Route>
+          {role ? (
+            <Route path="/" element={<DashboardLayout />}>
+              <Route index element={<Dashboard />} />
+              <Route path="/admin/free-courses" element={<FreeCourses />} />
+              <Route path="/admin/paid-courses" element={<PaidCourses />} />
+              <Route path="/admin/mentors" element={<Mentors />} />
+              <Route path="/admin/Students" element={<Students />} />
+              <Route path="/create/freeCourse" element={<CreateCourse />} />
+              <Route path="/settings" element={<Settings />} />
+            </Route>
+          ) : (
+            <Route path="/" element={<DashboardLayout />}>
+              <Route index element={<Dashboard />} />
+              <Route path="/courses" element={<Courses />} />
+              <Route path="/settings" element={<Settings />} />
+            </Route>
+          )}
           <Route path="/course" element={<CourseLayout />}>
-            <Route path=":id" element={<CoursesContent  />} />
-            <Route path=":id/:moduleid/:contentid" element={<CoursesContent />} />
+            <Route path=":id" element={<CoursesContent />} />
+            <Route
+              path=":id/:moduleid/:contentid"
+              element={<CoursesContent />}
+            />
           </Route>
           <Route path="/login" element={<Login />} />
         </Routes>

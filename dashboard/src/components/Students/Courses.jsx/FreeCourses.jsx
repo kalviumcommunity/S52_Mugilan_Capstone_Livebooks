@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { useGetFreeCoursesQuery } from "../../../redux/features/courses/courseApi";
+import { useGetFreeCoursesQuery } from "../../../../redux/features/courses/courseApi";
 
 function FreeCourses() {
   const [freeCourses, setFreeCourses] = useState([]);
@@ -28,7 +28,11 @@ function FreeCourses() {
                   className=" bg-[#87A1EC] border-2 border-black flex flex-col h-[350px] w-[80dvw] 800px:h-[35vh] 800px:w-[33vw] 1000px:w-[30vw] 1300px:w-[25vw] rounded-md  shadow-[6px_6px_3px__rgba(0,0,0,0.7)]"
                 >
                   <div className=" w-full h-[60%] bg-yellow-200 rounded-t-lg">
-                    <img className="h-full w-full" src={items.thumbnail.url} alt="" />
+                    <img
+                      className="h-full w-full"
+                      src={items.thumbnail.url}
+                      alt=""
+                    />
                   </div>
                   <div className=" w-full h-[40%] rounded-b-lg p-3 ">
                     <div className=" flex flex-col h-full w-full justify-between">

@@ -221,7 +221,9 @@ router.post(
 
 
     if (user.courses.length == 0) {
-      return next(new ErrorHandler("Please purchase course to access the resourses"), 400);
+      if(user.role != "admin"){
+        return next(new ErrorHandler("Please purchase course to access the resourses"), 400);
+      }
     }
     for (var i = 0; i < user.courses.length; i++) {
       const paidCourses = await paidCourse.findOne({ _id: user.courses[i]._id });
