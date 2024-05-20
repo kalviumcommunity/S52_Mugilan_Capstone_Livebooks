@@ -13,12 +13,23 @@ import analyticsRoutes from "./routes/analytics.routes.js";
 import layoutRoutes from "./routes/layout.router.js";
 // body parser
 
-app.use(
-  cors({
-    origin: process.env.ORIGIN || process.env.ORIGIN2,
-    credentials: true,
-  })
-);
+const allowedOrigins = [
+  process.env.ORIGIN,
+  process.env.ORIGIN2
+];
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 
