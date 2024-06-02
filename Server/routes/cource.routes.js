@@ -1,7 +1,7 @@
 import { fileURLToPath } from "url";
 import path from "path";
 import express, { Router, json } from "express";
-import UserModel from "../models/user.js";
+import {UserModel, QuestionModel} from "../models/user.js";
 import ErrorHandler from "../middlewar/ErrorHandler.js";
 import ejs from "ejs";
 import sendMail from "../utils/sendMail.js";
@@ -95,8 +95,11 @@ routes.post(
     const courseData = req.body;
     try {
       // upload thumbnail
-      let thumbnail = {};
-      if (req.body.thumbnail) {
+      const data = req.body;
+      console.log(data)
+      const thumbnail = data.thumbnail || undefined;
+
+      if (thumbnail) {
         const result = await cloudinary.v2.uploader.upload(req.body.thumbnail, {
           folder: "courses",
         });
@@ -106,13 +109,15 @@ routes.post(
         };
       }
 
-
-
       // Create a new paid course
       const course = await paidCourse.create({
         ...courseData,
         thumbnail,
       });
+
+      const courses = await freeCourse.find();
+
+      await redis.set("allPaidCourse", JSON.stringify(courses));
 
       res.status(201).json({
         success: true,
@@ -234,6 +239,7 @@ routes.post(
   CatchAsyncError(async (req, res, next) => {
     try {
       const data = req.body;
+      console.log(data)
       const thumbnail = data.thumbnail || undefined;
 
       if (thumbnail) {
@@ -248,14 +254,19 @@ routes.post(
       }
       const course = await freeCourse.create({
         ...data,
+        thumbnail
       });
+
+      const courses = await freeCourse.find();
+
+      await redis.set("allFreeCourse", JSON.stringify(courses));
 
       res.status(201).json({
         success: true,
         course,
       });
     } catch (error) {
-      console.log(error);
+      console.log("error",error);
       return next(new ErrorHandler(error.message, 500));
     }
   })
@@ -288,12 +299,13 @@ routes.put(
         { $set: data },
         { new: true }
       );
+      console.log(courses);
       res.status(201).json({
         success: true,
         courses,
       });
     } catch (error) {
-      console.log(error);
+      console.log("wrroe",error);
       return next(new ErrorHandler(error.message, 500));
     }
   })
@@ -630,38 +642,42 @@ routes.put(
   isAutheticated,
   CatchAsyncError(async (req, res, next) => {
     try {
-      const { question, courseId, contentId } = req.body;
+      const { question, courseId, moduleId } = req.body;
       const course = await paidCourse.findById(courseId);
 
-      if (!mongoose.Types.ObjectId.isValid(contentId)) {
-        return next(new ErrorHandler("invalid content id", 400));
+      if (!course) {
+        return next(new ErrorHandler("Invalid Course ID", 500));
       }
-      const courseContent = course.course.find((item) =>
-        item._id.equals(contentId)
+      const courseModule = course.module.find((item) =>
+        item._id.equals(moduleId)
       );
-
-      if (!courseContent) {
-        return next(new ErrorHandler("Invalid Content ID", 500));
+      if (!courseModule) {
+        return next(new ErrorHandler("Invalid Module ID", 500));
       }
-
-      const newQuestions = {
+      const questions = {
         user: req.user,
         question,
+        courseName: course.name,
+        moduleName : courseModule.heading,
         questionReplays: [],
-      };
-      courseContent.questions.push(newQuestions);
+      }
 
-      await notificationModel.create({
+      await QuestionModel.create(questions);
+
+      const notifications ={
         user: req.user._id,
         title: "New Questions",
-        message: `you have a new question in ${courseContent.title}`,
-      });
+        message: `you have a new question in the module of ${courseModule.heading} and in the course of ${course.name}`,
+      }
+
+      await notificationModel.create(notifications);
 
       await course.save();
 
       res.status(201).json({
         success: true,
-        course,
+        notificationModel,
+
       });
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
@@ -676,49 +692,23 @@ routes.put(
   isAutheticated,
   CatchAsyncError(async (req, res, next) => {
     try {
-      const { answer, courseId, contentId, questionId } = req.body;
+      const { answer, questionId, courseName, moduleName } = req.body;
 
-      const course = await paidCourse.findById(courseId);
 
-      if (!mongoose.Types.ObjectId.isValid(contentId)) {
-        return next(new ErrorHandler("invalid content id 1", 400));
-      }
-
-      const courseContent = course.course.find((item) =>
-        item._id.equals(contentId)
-      );
-
-      if (!courseContent) {
-        return next(new ErrorHandler("Invalid Content ID 4", 500));
-      }
-
-      const question = courseContent.questions.find((item) =>
-        item._id.equals(questionId)
-      );
+      const question = await QuestionModel.findById(questionId)
 
       if (!question) {
         return next(new ErrorHandler("Invalid Question Id", 400));
       }
 
-      const newAnswer = {
-        user: req.user,
-        answer,
-      };
-      question.questionReplays.push(newAnswer);
+      question.questionReplays.push(answer);
 
-      await course.save();
+      await question.save();
 
-      if (req.user._id === question.user._id) {
-        await notificationModel.create({
-          user: req.user._id,
-          title: "New Questions recived",
-          message: `you have a new question in ${courseContent.title}`,
-        });
-      } else {
-        // console.log(question.questionReplays.user);
+    
         const data = {
           name: question.user.name,
-          title: courseContent.title,
+          title: courseName,
         };
 
         const html = await ejs.renderFile(
@@ -736,7 +726,7 @@ routes.put(
         } catch (error) {
           return next(new ErrorHandler(error.message, 400));
         }
-      }
+      
       // else block finished
 
       res.status(200).json({

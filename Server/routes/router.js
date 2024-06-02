@@ -1,7 +1,7 @@
 import { fileURLToPath } from "url";
 import path from "path";
 import express from "express";
-import UserModel from "../models/user.js";
+import {UserModel} from "../models/user.js";
 import ErrorHandler from "../middlewar/ErrorHandler.js";
 import jwt from "jsonwebtoken";
 import ejs from "ejs";

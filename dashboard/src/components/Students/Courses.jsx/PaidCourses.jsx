@@ -9,6 +9,7 @@ function Paidcourses() {
   const [getBoughtCourses, { isSuccess, data, error }] =
     useLazyGetPaidCoursesQuery();
   console.log(courses);
+  
   useEffect(() => {
     const fetchCourses = async () => {
       const promises = courses.map((course) => getBoughtCourses(course._id));
@@ -16,7 +17,6 @@ function Paidcourses() {
       const fetchedCourses = responses.map((response) => response.data.course);
       setPaidCourses(fetchedCourses);
     };
-
     fetchCourses();
   }, []);
   return (

@@ -87,12 +87,14 @@ function App() {
               <Route path="/admin/mentors" element={<Mentors />} />
               <Route path="/admin/Students" element={<Students />} />
               <Route path="/create/freeCourse" element={<CreateCourse />} />
+              <Route path="/create/PaidCourse" element={<CreateCourse />} />
               <Route path="/settings" element={<Settings />} />
             </Route>
           ) : (
             <Route path="/" element={<DashboardLayout />}>
               <Route index element={<Dashboard />} />
               <Route path="/courses" element={<Courses />} />
+              <Route path="/message" element={<Courses />} />
               <Route path="/settings" element={<Settings />} />
             </Route>
           )}

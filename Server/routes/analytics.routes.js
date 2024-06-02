@@ -3,7 +3,7 @@ import { authorizeRole, isAutheticated } from "../middlewar/auth.js";
 import { CatchAsyncError } from "../middlewar/catchAsynErrors.js";
 import express from "express";
 import { generateLast12MonthsData } from "../utils/analytics.generator.js";
-import UserModel from "../models/user.js";
+import {UserModel} from "../models/user.js";
 import { paidCourse } from "../models/course.js";
 import orderModel from "../models/order.js";
 const analyticsRoutes = express.Router();

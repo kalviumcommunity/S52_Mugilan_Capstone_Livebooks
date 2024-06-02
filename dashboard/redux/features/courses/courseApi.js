@@ -31,8 +31,26 @@ export const CourseAPI = apiSlice.injectEndpoints({
                 credentials:"include"
             })
         }),
+        createFreeCourse: builder.mutation({
+            query:(course) => ({
+                url:"courses/free",
+                method:"POST",
+                body:course,
+                credentials:"include"
+            })
+        }),
+        createPaidCourse: builder.mutation({
+            query:(course) => ({
+                url:"courses/paid",
+                method:"POST",
+                body:course,
+                credentials:"include"
+            })
+        }),
     }),
 
 })
 
-export const { useGetFreeCoursesQuery,useGetsingleFreeCoursesQuery , useLazyGetPaidCoursesQuery, useGetAllPaidCoursesQuery} = CourseAPI;
+export const { useGetFreeCoursesQuery,useGetsingleFreeCoursesQuery ,
+     useLazyGetPaidCoursesQuery, useGetAllPaidCoursesQuery,
+      useCreateFreeCourseMutation, useCreatePaidCourseMutation} = CourseAPI;
