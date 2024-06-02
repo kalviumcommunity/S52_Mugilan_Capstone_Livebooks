@@ -11,6 +11,10 @@ export const navItemsDataUser = [
     name: "Courses",
     url: "/courses",
   },
+  {
+    name: "Speak",
+    url: "/message",
+  },
 ];
 export const navItemsDataAdmin = [
   {
@@ -33,6 +37,10 @@ export const navItemsDataAdmin = [
     name: "Student",
     url: "/admin/Students",
   },
+  {
+    name: "Questions",
+    url: "/message",
+  },
 ];
 
 function NavItems({ activeItem, isMobile }) {
@@ -50,8 +58,8 @@ function NavItems({ activeItem, isMobile }) {
       <div
         className={
           roleWidthSize
-            ? `hidden 800px:flex 800px:flex-col 800px:justify-between 800px:text-sm 1000px:text-base 1300px:text-lg font-Unbounded font-light h-[30vh] `
-            : `hidden 800px:flex 800px:flex-col 800px:justify-between text-xl font-Unbounded font-light h-[100px]  `
+            ? `hidden 800px:flex 800px:flex-col 800px:justify-between 800px:text-sm 1000px:text-base 1300px:text-lg font-Unbounded font-light h-[34vh] `
+            : `hidden 800px:flex 800px:flex-col 800px:justify-between text-xl font-Unbounded font-light h-[200px]  `
         }
       >
         {" "}

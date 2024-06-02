@@ -4,8 +4,11 @@ import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 function FreeCourses() {
+
   const { data, isSuccess, error } = useGetFreeCoursesQuery();
   const [paidCourses, setPaidCourses] = useState([]);
+
+
   useEffect(() => {
     if (isSuccess) {
       setPaidCourses(data.course);

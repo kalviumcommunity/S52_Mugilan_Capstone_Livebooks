@@ -41,9 +41,9 @@ function Paidcourses() {
           onChange={handleSearchChange}
         />
         Paid courses
-        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        <Link to="/create/paidCourse" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
           Create Course
-        </button>
+        </Link>
       </div>
       <div className="p-3">
         <table className="min-w-full divide-y divide-gray-200">

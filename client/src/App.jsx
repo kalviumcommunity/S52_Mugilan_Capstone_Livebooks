@@ -8,15 +8,15 @@ import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import GetStarted from "./pages/GetStarted";
 import Verification from "./pages/Verification";
+
 function App() {
+
+
   return (
-    <div className="w-screen 2xl:max-w-[2000px] font-Unbounded">
+    <div  className=" w-screen 2xl:max-w-[2000px] font-Unbounded">
       
     <BrowserRouter>
       <Routes >
-
-       
-
         <Route path="/" element={<Home />} />
         <Route path="/contact" element={<ContactUs />} />
         <Route path="/courses" element={<Courses />} />

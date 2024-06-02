@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { mongo } from "mongoose";
 import jwt  from "jsonwebtoken";
 const emailRegExpattern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
@@ -49,6 +49,19 @@ const userSchema = new mongoose.Schema(
   },
   { timestamps: true }// Automatically add createdAt and updatedAt fields
 ); 
+
+const questionSchema= new mongoose.Schema({
+  user : Object,
+  courseName: { type: String},
+  moduleName: { type: String},
+
+  question : {
+    type : String,
+    require : true
+  },
+  questionReplays:Array
+  
+})
 userSchema.methods.SignAccessToken = function () {
   return jwt.sign({ id: this._id }, process.env.ACCESS_TOKEN || "", {
     expiresIn: '5m'
@@ -62,6 +75,6 @@ userSchema.methods.SignRefreshToken = function () {
 };
 
 const UserModel = mongoose.model("users", userSchema);
-
-export default UserModel;
+const QuestionModel = mongoose.model("questions", questionSchema);
+export  {UserModel, QuestionModel};
 
