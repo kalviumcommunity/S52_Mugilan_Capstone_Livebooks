@@ -12,6 +12,8 @@ https://hogwarts.mugilans.in/
 ### Dashboard Page
 
 https://dashboard.hogwarts.mugilans.in/
+For use dashboard as student use this key
+   student@gmail.com and password : Mugilan
 
 ## Features Breakdown
 1. **Comprehensive Course Management:**
