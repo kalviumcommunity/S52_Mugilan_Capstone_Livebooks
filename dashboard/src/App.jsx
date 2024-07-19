@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import Header from "./components/utils/Header";
+import Askquestion from "./components/Students/questions/Askquestion"
 import {
   BrowserRouter,
   Outlet,
@@ -21,8 +22,9 @@ import FreeCourses from "./pages/AdminPages/FreeCourses";
 import PaidCourses from "./pages/AdminPages/PaidCourses";
 import Mentors from "./pages/AdminPages/Mentors";
 import Students from "./pages/AdminPages/Students";
-
+import AllQueries from "./pages/AdminPages/AllQueries";
 import CreateCourse from "./components/Admin/AddCourses";
+import Questions from "./pages/StudentPages/Questions";
 
 function DashboardLayout() {
   const [open, setOpen] = useState(false);
@@ -30,11 +32,6 @@ function DashboardLayout() {
   const navigate = useNavigate();
   const auth = useSelector((state) => state.auth.user);
 
-  useEffect(() => {
-    if (auth == "") {
-      navigate("/login");
-    }
-  }, []);
 
   return (
     <div className=" 800px:flex h-screen">
@@ -88,13 +85,15 @@ function App() {
               <Route path="/admin/Students" element={<Students />} />
               <Route path="/create/freeCourse" element={<CreateCourse />} />
               <Route path="/create/PaidCourse" element={<CreateCourse />} />
+              <Route path="admin/queries" element={<AllQueries />} />
               <Route path="/settings" element={<Settings />} />
             </Route>
           ) : (
             <Route path="/" element={<DashboardLayout />}>
               <Route index element={<Dashboard />} />
               <Route path="/courses" element={<Courses />} />
-              <Route path="/message" element={<Courses />} />
+              <Route path="/queries" element={<Questions />} />
+              <Route path="/askquestion/:id" element={<Askquestion />} />
               <Route path="/settings" element={<Settings />} />
             </Route>
           )}

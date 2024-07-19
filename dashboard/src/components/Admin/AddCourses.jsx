@@ -129,31 +129,34 @@ function CreateCourse() {
   const navigate = useNavigate();
 
   useEffect(() => {
-
     if (currentPathname === "/create/paidCourse") {
-      console.log('Inside /create/paidCourse condition');
       if (createPaidCourseSuccess) {
-        console.log("mugilan");
         navigate("/admin/paid-course");
         toast.success("Course added successfully");
-        console.log(courseDetails);
       } else if (createPaidCourseError) {
         toast.error("Course addition failed");
       }
     }
-  
+
     if (currentPathname === "/create/freeCourse") {
-      console.log('Inside /create/freeCourse condition');
+
       if (createFreeCourseSuccess) {
-        console.log("mugilan");
+
         navigate("/admin/free-courses");
         toast.success("Course added successfully");
-        console.log(courseDetails);
+
       } else if (createFreeCourseError) {
         toast.error("Course addition failed");
       }
     }
-  }, [currentPathname, createFreeCourseSuccess, createFreeCourseError, createPaidCourseSuccess, createPaidCourseError, courseDetails]);
+  }, [
+    currentPathname,
+    createFreeCourseSuccess,
+    createFreeCourseError,
+    createPaidCourseSuccess,
+    createPaidCourseError,
+    courseDetails,
+  ]);
 
   const handleFinishButton = (courseData) => {
     if (currentPathname === "/create/freeCourse") {

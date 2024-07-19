@@ -108,9 +108,9 @@ const landingPageCourses = new mongoose.Schema(
 
 // Quiz Question Schema
 const quizQuestionSchema = new mongoose.Schema({
-  question: { type: String, required: true },
-  options: [{ type: String, required: true }],
-  answer: { type: String, required: true },
+  question: { type: String },
+  options: [{ type: String }],
+  answer: { type: String },
 });
 
 const videoSchema = new mongoose.Schema({
@@ -161,7 +161,7 @@ const cheatSheetsSchema = new mongoose.Schema({
 const quizzesSchema = new mongoose.Schema({
   type: Object,
   _id: { type: mongoose.Types.ObjectId, auto: true },
-  title: { type: String, required: true },
+  title: { type: String },
   questions: [quizQuestionSchema],
 });
 
@@ -216,7 +216,7 @@ const moduleFreeSchema = new mongoose.Schema({
   heading: { type: String },
   subHeading: { type: String },
   video: videoSchema,
-  quizzes: quizzesSchema,
+  quizzes: [quizzesSchema],
   assignments: assignmentShema,
   cheatSheets: cheatSheetsSchema,
   links: [linkSchema],
@@ -251,7 +251,7 @@ const livebooksFreeCourse = new mongoose.Schema(
       type: String,
       require: true,
     },
-    module: [moduleFreeSchema],
+    modules: [moduleFreeSchema],
   },
   { timestamps: true }
 );

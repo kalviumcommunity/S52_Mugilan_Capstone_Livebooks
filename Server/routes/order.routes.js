@@ -3,23 +3,16 @@ import path from "path";
 import express from "express";
 import {UserModel} from "../models/user.js";
 import ErrorHandler from "../middlewar/ErrorHandler.js";
-import jwt from "jsonwebtoken";
 import ejs from "ejs";
 import sendMail from "../utils/sendMail.js";
 import { CatchAsyncError } from "../middlewar/catchAsynErrors.js";
 import { authorizeRole, isAutheticated } from "../middlewar/auth.js";
-import { redis } from "../utils/redis.js";
-import { getUserById } from "../service/user.service.js";
-import { Error } from "mongoose";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-import { freeCourse, staticCourse } from "../models/course.js";
 import { paidCourse } from "../models/course.js";
 // creating order
 import notificationModel from "../models/notification.js";
 import { getAllOrderService, newOrder } from "../service/order.service.js";
-import orderModel from "../models/order.js";
-
 const orderRouter = express.Router();
 
 // getting all orders -- admin
@@ -60,8 +53,6 @@ orderRouter.post(
       const courseExist = user.courses.some((course) => {
         return course._id.toString() === courseID.toString();
       });
-      
-      console.log(courseExist, course)
 
       if (courseExist) {
         return next(
@@ -114,7 +105,6 @@ orderRouter.post(
 
         if (landingPageCourses.purchaces >=0) {
           landingPageCourses.purchaces = landingPageCourses.purchaces + 1;
-          console.log(landingPageCourses.purchaces)
         }
 
         await landingPageCourses.save();

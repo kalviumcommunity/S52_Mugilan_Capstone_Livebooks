@@ -13,7 +13,7 @@ import { useSelector } from "react-redux";
 
 function Home() {
   const auth = useSelector((state) => state.auth)
-  console.log(auth)
+
 
   const [open, setOpen] = useState(false);
   const [activeItem, setactiveItem] = useState(0);

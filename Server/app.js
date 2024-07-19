@@ -1,16 +1,17 @@
 import express from "express";
 export const app = express();
 import dotenv from "dotenv";
+dotenv.config();
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import routes from "./routes/router.js";
+import Userroutes from "./routes/router.js";
 import ErrorMiddleware from "./middlewar/Error.js";
-import router from "./routes/cource.routes.js";
+import Courserouter from "./routes/cource.routes.js";
 import orderRouter from "./routes/order.routes.js";
-dotenv.config();
 import notificationRoutes from "./routes/notification.routes.js";
 import analyticsRoutes from "./routes/analytics.routes.js";
 import layoutRoutes from "./routes/layout.router.js";
+import calenderEventRoute from "./routes/calender.routes.js"; 
 // body parser
 
 const allowedOrigins = [
@@ -40,7 +41,7 @@ app.use(cookieParser());
 // using cors for our http request
 
 
-app.use("/api/v1", router, orderRouter, routes, notificationRoutes, analyticsRoutes, layoutRoutes);
+app.use("/api/v1",Courserouter, orderRouter, Userroutes, notificationRoutes, analyticsRoutes, layoutRoutes, calenderEventRoute);
 
 // test the routes
 

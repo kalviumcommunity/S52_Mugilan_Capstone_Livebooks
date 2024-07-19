@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useGetFreeCoursesQuery } from "../../../redux/features/courses/courseApi";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import Heading from "@/utils/Heading";
 
 function FreeCourses() {
 
@@ -35,6 +36,11 @@ function FreeCourses() {
 
   return (
     <div>
+      <Heading
+        title="FreeCourses Admin -Hogwarts"
+        description="List of free courses"
+        keywords="question,course, free, paid , freecourses answer, queries, answered, lesson, html, css, js , search"
+      />
       <div className="p-3 flex justify-between">
         <input
           type="text"

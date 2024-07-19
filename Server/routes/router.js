@@ -114,7 +114,6 @@ router.post(
 
       const html = await ejs.renderFile(
         path.join(__dirname, "../mails/activation-mail.ejs"),
-
         data
       );
 
@@ -193,7 +192,7 @@ router.post(
         message: "email registration successfully",
       });
     } catch (error) {
-      console.log(error);
+
       return next(new ErrorHandler(error.message, 400));
     }
   })
@@ -209,30 +208,38 @@ router.post(
     }
     const user = await UserModel.findOne({ email });
 
+
     if (!user) {
       return next(new ErrorHandler("Invalid user Email"), 400);
     }
+
     const isPasswordVerify = await bcrypt.compare(password, user.password);
 
     if (!isPasswordVerify) {
+
       return next(new ErrorHandler("Invalid password"), 400);
     }
     // find the length of the courses
 
 
-    if (user.courses.length == 0) {
+    if (user.courses.length == 0  ) {
+
       if(user.role != "admin"){
         return next(new ErrorHandler("Please purchase course to access the resourses"), 400);
       }
     }
-    for (var i = 0; i < user.courses.length; i++) {
-      const paidCourses = await paidCourse.findOne({ _id: user.courses[i]._id });
-      console.log(paidCourses,"we");
-      if (!paidCourses || paidCourses == null) {
-        return next(new ErrorHandler("Please purchase course to access the resourses"), 400);
+    if(user.role != "admin"){
+      for (var i = 0; i < user.courses.length; i++) {
+        const paidCourses = await paidCourse.findOne({ _id: user.courses[i]._id });
+        if (!paidCourses || paidCourses == null) {
+          return next(new ErrorHandler("Please purchase course to access the resourses"), 400);
+        }
       }
+      sendToken(user, 200, res);
     }
-    sendToken(user, 200, res);
+    else{
+      sendToken(user, 200, res);
+    }
   })
 );
 
@@ -252,9 +259,7 @@ router.post(
       if (!user) {
         return next(new ErrorHandler("Invalid user Email"), 400);
       }
-      console.log(user.email, user.password);
       const isPasswordVerify = await bcrypt.compare(password, user.password);
-      console.log(isPasswordVerify);
       if (!isPasswordVerify) {
         return next(new ErrorHandler("Invalid password"), 400);
       }
@@ -331,7 +336,6 @@ router.get(
         accessToken,
       });
     } catch (error) {
-      console.log(error);
       return next(new ErrorHandler(error.message, 400));
     }
   })
@@ -373,39 +377,36 @@ router.get(
 );
 
 // update the user info
-
 router.put(
   "/update_user_info",
   isAutheticated,
   CatchAsyncError(async (req, res, next) => {
     try {
-      const { email, name } = req.body;
+      const { name, email } = req.body;
       const userId = req.user._id;
-      const user = await UserModel.findById(userId);
-      if (email && user) {
-        const isEmailExist = await UserModel.findOne({ email });
-        if (isEmailExist) {
-          return next(new ErrorHandler("email already exist ", 400));
-        }
-        user.email = email;
-
-        if (name && user) {
-          user.name = name;
-        }
-        await user.save();
-
-        await redis.set(userId, JSON.stringify(user));
-
-        res.status(201).json({
-          success: true,
-          user,
-        });
+      if (!userId) {
+        return next(new ErrorHandler("User ID not found", 400));
       }
+      const user = await UserModel.findById(userId);
+      if (!user) {
+        return next(new ErrorHandler("User not found", 400));
+      }
+      
+      if (name) {
+        user.name = name;
+      }
+      await user.save();
+      await redis.set(userId, JSON.stringify(user));
+      res.status(201).json({
+        success: true,
+        user,
+      });
     } catch (error) {
       return next(new ErrorHandler(error.message, 400));
     }
   })
 );
+
 
 router.put(
   "/update_user_password",
@@ -468,21 +469,23 @@ router.put(
           public_id: myCloud.public_id,
           url: myCloud.secure_url, // Check the actual property name in the myCloud object
         };
-      }
 
-      await user.save();
-      await redis.set(userId, JSON.stringify(user));
+      }
+      if (user) {
+        await user.save();
+        await redis.set(userId, JSON.stringify(user));
+      }
 
       res.status(201).json({
         success: true,
         user,
       });
     } catch (error) {
-      console.log(error);
       return next(new ErrorHandler(error.message, 400));
     }
   })
 );
+
 
 // delete a user -- or admin only
 
@@ -492,7 +495,7 @@ router.delete(
   authorizeRole("admin"),
   CatchAsyncError(async (req, res, next) => {
     try {
-      const { id } = req.params;
+
       const user = await UserModel.findById(id);
 
       if (!user) {

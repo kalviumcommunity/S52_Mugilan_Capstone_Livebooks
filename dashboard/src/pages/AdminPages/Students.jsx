@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useGetAlluserQuery } from '../../../redux/features/user/userApi';
+import Heading from '@/utils/Heading';
 
 function Students() {
   const { data, isSuccess, error } = useGetAlluserQuery();
@@ -18,6 +19,11 @@ function Students() {
 
   return (
     <div>
+      <Heading
+        title="Students Admin -Hogwarts"
+        description="List of Students"
+        keywords="question,course,list of students,users, students, list of mentors, mentores, hogwatrs, school, learning free, paid , freecourses answer, queries, answered, lesson, html, css, js , search"
+      />
       <div className="p-3 flex justify-between items-center"> 
         <div className="flex items-center justify-center">
           <h3>Name or Emai : </h3>
