@@ -1,14 +1,18 @@
 import { fileURLToPath } from "url";
 import path from "path";
 import express, { Router, json } from "express";
-import {UserModel, QuestionModel} from "../models/user.js";
+import { UserModel, QuestionModel } from "../models/user.js";
 import ErrorHandler from "../middlewar/ErrorHandler.js";
 import ejs from "ejs";
 import sendMail from "../utils/sendMail.js";
 import bcrypt from "bcryptjs";
 import cloudinary from "cloudinary";
 import { CatchAsyncError } from "../middlewar/catchAsynErrors.js";
-import { authorizeRole, isAutheticated, isAutheticatedPaid } from "../middlewar/auth.js";
+import {
+  authorizeRole,
+  isAutheticated,
+  isAutheticatedPaid,
+} from "../middlewar/auth.js";
 import { redis } from "../utils/redis.js";
 import mongoose, { Error } from "mongoose";
 const __filename = fileURLToPath(import.meta.url);
@@ -50,7 +54,6 @@ routes.get(
     try {
       getAllPaidCoursesService(res);
     } catch (error) {
-      console.log("err.mugilan")
       return next(new ErrorHandler(error.message, 400));
     }
   })
@@ -96,7 +99,6 @@ routes.post(
     try {
       // upload thumbnail
       const data = req.body;
-      console.log(data)
       const thumbnail = data.thumbnail || undefined;
 
       if (thumbnail) {
@@ -125,7 +127,6 @@ routes.post(
         course,
       });
     } catch (err) {
-      console.log(err);
       return next(new ErrorHandler(err.message, 500));
     }
   })
@@ -208,7 +209,6 @@ routes.put(
           };
         })
       );
-      console.log(processedModules);
       // Update the course
       course.name = updatedCourseData.name || course.name;
       course.description = updatedCourseData.description || course.description;
@@ -224,14 +224,12 @@ routes.put(
         course,
       });
     } catch (err) {
-      console.log(err);
       return next(new ErrorHandler(err.message, 500));
     }
   })
 );
 
 // create the free course
-
 routes.post(
   "/courses/free",
   isAutheticated,
@@ -239,11 +237,9 @@ routes.post(
   CatchAsyncError(async (req, res, next) => {
     try {
       const data = req.body;
-      console.log(data)
       const thumbnail = data.thumbnail || undefined;
 
       if (thumbnail) {
-
         const myCloud = await cloudinary.v2.uploader.upload(thumbnail, {
           folder: "courses",
         });
@@ -252,13 +248,13 @@ routes.post(
           url: myCloud.secure_url,
         };
       }
-      const course = await freeCourse.create({
-        ...data,
-        thumbnail
-      });
+
+      // const modules = data.modules || [];
+
+      const course = await freeCourse.create(data);
+
 
       const courses = await freeCourse.find();
-
       await redis.set("allFreeCourse", JSON.stringify(courses));
 
       res.status(201).json({
@@ -266,7 +262,6 @@ routes.post(
         course,
       });
     } catch (error) {
-      console.log("error",error);
       return next(new ErrorHandler(error.message, 500));
     }
   })
@@ -294,18 +289,16 @@ routes.put(
           url: myCloud.secure_url,
         };
       }
-      const courses= await freeCourse.findByIdAndUpdate(
+      const courses = await freeCourse.findByIdAndUpdate(
         courseId,
         { $set: data },
         { new: true }
       );
-      console.log(courses);
       res.status(201).json({
         success: true,
         courses,
       });
     } catch (error) {
-      console.log("wrroe",error);
       return next(new ErrorHandler(error.message, 500));
     }
   })
@@ -415,7 +408,6 @@ routes.put(
         course,
       });
     } catch (error) {
-      console.log(error);
       return next(new ErrorHandler(error.message, 500));
     }
   })
@@ -441,7 +433,7 @@ routes.get(
       } else {
         const course = await staticCourse.findById(req.params.id);
         await redis.set(courseId, JSON.stringify(course), "EX", 604800);
-        console.log("mongoos");
+
 
         res.status(201).json({
           success: true,
@@ -636,51 +628,91 @@ routes.get(
 );
 
 // add questions in course in the paid courses.
-
-routes.put(
-  "/questions_in_course",
+// add questions in course in the paid courses.
+routes.get(
+  "/get-all-user-questions",
   isAutheticated,
+  CatchAsyncError(async (req, res, next) => {
+    try {
+      const questions = await QuestionModel.find({ 'user._id': req.user._id });
+      res.status(201).json({
+        success: true,
+        questions,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500)); // Use 500 for server errors
+    }
+  })
+);
+
+
+routes.post(
+  "/questions-in-course",
+  isAutheticatedPaid,
   CatchAsyncError(async (req, res, next) => {
     try {
       const { question, courseId, moduleId } = req.body;
       const course = await paidCourse.findById(courseId);
 
       if (!course) {
-        return next(new ErrorHandler("Invalid Course ID", 500));
+        return next(new ErrorHandler("Invalid Course ID", 400)); // Use 400 for bad request
       }
+
       const courseModule = course.module.find((item) =>
         item._id.equals(moduleId)
       );
+
       if (!courseModule) {
-        return next(new ErrorHandler("Invalid Module ID", 500));
+
+        return next(new ErrorHandler("Invalid Module ID", 400)); // Use 400 for bad request
       }
+
       const questions = {
-        user: req.user,
+        user: { _id: req.user._id, name: req.user.name, email: req.user.email },
         question,
+        courseId: course._id,
         courseName: course.name,
-        moduleName : courseModule.heading,
+        moduleName: courseModule.heading,
+        answered: false,
         questionReplays: [],
-      }
+      };
 
       await QuestionModel.create(questions);
 
-      const notifications ={
+      const notifications = {
         user: req.user._id,
         title: "New Questions",
-        message: `you have a new question in the module of ${courseModule.heading} and in the course of ${course.name}`,
-      }
+        message: `You have a new question in the module of ${courseModule.heading} and in the course of ${course.name}`,
+      };
 
       await notificationModel.create(notifications);
-
       await course.save();
 
       res.status(201).json({
         success: true,
-        notificationModel,
-
+        notifications,
       });
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
+
+// only for admin
+routes.get(
+  "/get-all-question-admin",
+  isAutheticated,
+  authorizeRole("admin"),
+  CatchAsyncError(async (req, res, next) => {
+    try {
+      const questions = await QuestionModel.find();
+      res.status(201).json({
+        success: true,
+        questions,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 400));
     }
   })
 );
@@ -692,46 +724,44 @@ routes.put(
   isAutheticated,
   CatchAsyncError(async (req, res, next) => {
     try {
-      const { answer, questionId, courseName, moduleName } = req.body;
+      const { answer, questionId, courseName } = req.body;
 
-
-      const question = await QuestionModel.findById(questionId)
+      const question = await QuestionModel.findById(questionId);
 
       if (!question) {
         return next(new ErrorHandler("Invalid Question Id", 400));
       }
 
       question.questionReplays.push(answer);
+      question.answered = true;
 
       await question.save();
 
-    
-        const data = {
-          name: question.user.name,
-          title: courseName,
-        };
-
-        const html = await ejs.renderFile(
-          path.join(__dirname, "./mails/questionReplay.ejs"),
-          data
-        );
-
-        try {
-          await sendMail({
-            email: question.user.email,
-            subject: "Question Replay",
-            template: "questionReplay.ejs",
-            data,
-          });
-        } catch (error) {
-          return next(new ErrorHandler(error.message, 400));
-        }
+      const maildata = {
+        name: question.user.name,
+        title: courseName,
+      };
       
-      // else block finished
+      const html = await ejs.renderFile(
+        path.join(__dirname, "../mails/question-replay.ejs"),
+        maildata
+      );
+      try {
+        console.log(question.user.email)
+        await sendMail({
+          email: question.user.email,
+          subject: "Question Replay",
+          template: "question-replay.ejs",
+          data: maildata,
+        });
+      } catch (error) {
+        return next(new ErrorHandler(error.message, 400));
+      }
+      console.log(maildata)
 
       res.status(200).json({
         success: true,
-        course,
+        question,
       });
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));

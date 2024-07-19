@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useGetAllPaidCoursesQuery } from "../../../redux/features/courses/courseApi";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import Heading from "@/utils/Heading";
 
 function Paidcourses() {
   const { data, isSuccess, error } = useGetAllPaidCoursesQuery();
@@ -32,6 +33,11 @@ function Paidcourses() {
 
   return (
     <div>
+      <Heading
+        title="Paid Courses Admin -Hogwarts"
+        description="List of paid Courses"
+        keywords="question,course,list of, paid, courses, paidcourses , list of paid courses, mentors, mentores, hogwatrs, school, learning free, paid , freecourses answer, queries, answered, lesson, html, css, js , search"
+      />
       <div className="p-3 flex justify-between">
         <input
           type="text"

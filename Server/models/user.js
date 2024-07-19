@@ -34,7 +34,7 @@ const userSchema = new mongoose.Schema(
     role: {
       type: String,
       default: "student",
-      enum: ["user", "admin"], // Specify allowed values for the role field
+      enum: ["student", "admin"], // Specify allowed values for the role field
     },
     isVerified: {
       type: Boolean,
@@ -54,11 +54,12 @@ const questionSchema= new mongoose.Schema({
   user : Object,
   courseName: { type: String},
   moduleName: { type: String},
-
+  courseId : {type: String},
   question : {
     type : String,
     require : true
   },
+  answered: { type: Boolean, default: false},
   questionReplays:Array
   
 })

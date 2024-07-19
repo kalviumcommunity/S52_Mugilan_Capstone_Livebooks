@@ -41,7 +41,6 @@ function Login() {
 
   useEffect(() => {
     if (isSuccess) {
-      console.log(data)
       const com = toast.success("Login successful", {
         duration:1000
       });

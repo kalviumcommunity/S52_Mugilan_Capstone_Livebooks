@@ -1,13 +1,17 @@
 import React from 'react';
 import Quiz from './Quiz.jsx';
-import { useOutletContext } from 'react-router-dom';
+import { Link, useOutletContext } from 'react-router-dom';
 import { Video } from 'lucide-react';
 import ReactPlayer from 'react-player'
+import Cookies from 'js-cookie';
 function CoursesContent() {
   const [selectedContent] = useOutletContext();
-
+  const courseId = Cookies.get('courseId');
   return (
-    <div className=''>
+    <div className=' relative h-full'>
+      <Link to={`/askquestion/${courseId}`} className=' absolute bottom-0 right-0 bg-green-400 px-2 py-3'>
+        Ask Dought
+      </Link>
       {selectedContent && (
         <div>
           {selectedContent.title && <h1>{selectedContent.title}</h1>}

@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/accordion";
 import { useGetsingleFreeCoursesQuery } from "../../../redux/features/courses/courseApi";
 import { useParams, Link } from "react-router-dom";
+import Cookies from "js-cookie";
 
 function SidebarCourse({ handleContentClick }) {
   const [courseData, setCourseData] = useState([]);
@@ -15,12 +16,23 @@ function SidebarCourse({ handleContentClick }) {
 
   useEffect(() => {
     if (isSuccess) {
-      console.log(data.course);
       setCourseData(data.course);
     } else if (error) {
       console.log(error);
     }
   }, [isSuccess, error]);
+
+  useEffect(() => {
+    Cookies.set("courseId", courseData?._id)
+    Cookies.set("courseName", courseData?.name)
+
+  },[courseData])
+
+  const handleModuleClick = (moduleId, moduleName) => {
+    Cookies.set("moduleId", moduleId);
+    Cookies.set("moduleName", moduleName);
+  };
+
 
   return (
     <div className=" w-full h-[98%] ">
@@ -36,12 +48,13 @@ function SidebarCourse({ handleContentClick }) {
             courseData.module.map((items, index) => (
               <Accordion key={index} type="single" collapsible>
                 <AccordionItem value="item-1" className="border-t p-2">
-                  <AccordionTrigger>{items.heading}</AccordionTrigger>
-
+                  <AccordionTrigger onClick={() => handleModuleClick(items._id, items.heading)}>
+                    {items.heading}
+                  </AccordionTrigger>
                   {items.video && (
                     <AccordionContent
                       className="py-2 pl-8 mt-3 cursor-pointer"
-                      onClick={() => handleContentClick(items.video)}
+                      onClick={() => handleContentClick(items.video,courseData._id)}
                     >
                       <Link to={`${id}/${items._id}/${items.video._id}`}>
                         Content
@@ -51,7 +64,7 @@ function SidebarCourse({ handleContentClick }) {
                   {items.cheatSheets && (
                     <AccordionContent
                       className="py-2 pl-8 mt-3 cursor-pointer"
-                      onClick={() => handleContentClick(items.cheatSheets)}
+                      onClick={() => handleContentClick(items.cheatSheets,courseData._id)}
                     >
                       <Link to={`${id}/${items._id}/${items.cheatSheets._id}`}>
                         Cheat Sheet
@@ -61,7 +74,7 @@ function SidebarCourse({ handleContentClick }) {
                   {items.quizzes && (
                     <AccordionContent
                       className="py-2 pl-8 mt-3 cursor-pointer"
-                      onClick={() => handleContentClick(items.quizzes)}
+                      onClick={() => handleContentClick(items.quizzes,courseData._id)}
                     >
                       <Link to={`${id}/${items._id}/${items.quizzes._id}`}>
                         Quiz

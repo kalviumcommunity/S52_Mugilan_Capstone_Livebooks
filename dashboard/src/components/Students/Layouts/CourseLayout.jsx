@@ -9,26 +9,23 @@ function CourseLayout() {
   const auth = useSelector((state) => state.auth.user);
   const [freeCourses, setFreeCourses] = useState([]);
   const [selectedContent, setSelectedContent] = useState(null);
+
   const [currentContent, setCurrentContent] = useState(null);
   const { data, isSuccess, error } = useGetFreeCoursesQuery();
 
   useEffect(() => {
     if (isSuccess) {
       setFreeCourses(data.course);
-      console.log(data.course);
     } else if (error) {
       console.log(error);
     }
   }, [isSuccess, error]);
 
-  useEffect(() => {
-    if (auth == "") {
-      navigate("/login");
-    }
-  }, []);
+
 
   const handleContentClick = (content) => {
     setSelectedContent(content);
+
   };
 
   return (
@@ -37,6 +34,7 @@ function CourseLayout() {
         <SidebarCourse
           data={freeCourses}
           handleContentClick={handleContentClick}
+          
         />
       </div>
       <div className=" h-full w-full p-3">

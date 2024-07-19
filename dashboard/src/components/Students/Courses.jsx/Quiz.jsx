@@ -22,7 +22,6 @@ function Quiz({ questions }) {
   };
 
   const handleSubmit = () => {
-    console.log('Selected Answers:', selectedAnswers);
     setSubmitted(true);
   };
 

@@ -10,9 +10,9 @@ function FreeCourses() {
   useEffect(() => {
     if (isSuccess) {
       setFreeCourses(data.course);
-      console.log(data.course);
+
     } else if (error) {
-      console.log(error);
+      console.log(error)
     }
   }, [isSuccess, error]);
 
@@ -23,7 +23,6 @@ function FreeCourses() {
   useEffect(() => {
     if (courseId) {
       Cookies.set('courseId', courseId);
-      console.log('Cookie set:', Cookies.get('courseId')); // Add this line
     }
   }, [courseId]);
 
@@ -38,12 +37,14 @@ function FreeCourses() {
                 <Link
                   to={`/course/${items._id}`}
                   key={index}
-                  // onClick={() => handleCourseClick(items._id)}
-                  className=" bg-[#87A1EC] border-2 border-black flex flex-col h-[350px] w-[80dvw] 800px:h-[35vh] 800px:w-[33vw] 1000px:w-[30vw] 1300px:w-[25vw] rounded-md  shadow-[6px_6px_3px__rgba(0,0,0,0.7)]"
+                  onClick={() => handleCourseClick(items._id)}
+                  className="w-full gap-3 p-3 flex flex-col h-full"
                 >
-                  <div className=" w-full h-[60%] bg-yellow-200 rounded-t-lg">
-                    <img
-                      className="h-auto w-full"
+                  <div className=" h-[250px] 1000px:h-full w-full ">
+                <div className=" bg-[#87A1EC] border-2 border-black flex flex-col h-full w-full rounded-md  shadow-[6px_6px_3px__rgba(0,0,0,0.7)]">
+                  <div className=" w-full max-h-[60%] h-full bg-yellow-200 rounded-t-lg">
+                  <img
+                      className="h-full w-full"
                       src={items.thumbnail?.url || FreeCoursess }
                       alt=""
                     />
@@ -51,10 +52,10 @@ function FreeCourses() {
                   <div className=" w-full h-[40%] rounded-b-lg p-3 ">
                     <div className=" flex flex-col h-full w-full justify-between">
                       <div className="1000px:text-sm 1200px:text-base">
-                        {items.name}
+                      {items.name}
                       </div>
-                      <div className="font-lighlt text-xs 1200px:text-sm">
-                        FlexBox
+                      <div className="font-light text-xs 1200px:text-sm">
+                        {items.description}
                       </div>
                       <div className=" w-full h-auto ">
                         <div className=" text-right 1000px:text-xs 1200px:text-sm">
@@ -64,6 +65,8 @@ function FreeCourses() {
                       </div>
                     </div>
                   </div>
+                </div>
+              </div>
                 </Link>
               ))}
           </div>

@@ -13,7 +13,7 @@ export const navItemsDataUser = [
   },
   {
     name: "Speak",
-    url: "/message",
+    url: "/queries",
   },
 ];
 export const navItemsDataAdmin = [
@@ -38,8 +38,8 @@ export const navItemsDataAdmin = [
     url: "/admin/Students",
   },
   {
-    name: "Questions",
-    url: "/message",
+    name: "Queries",
+    url: "/admin/queries",
   },
 ];
 
