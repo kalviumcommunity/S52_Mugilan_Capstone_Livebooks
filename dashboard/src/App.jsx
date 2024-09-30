@@ -26,6 +26,7 @@ import Students from "./pages/AdminPages/Students";
 import AllQueries from "./pages/AdminPages/AllQueries";
 import CreateCourse from "./components/Admin/AddCourses";
 import Questions from "./pages/StudentPages/Questions";
+import BookshopHomepage from "./components/Students/Books/BookshopHomepage";
 
 function DashboardLayout() {
   const [open, setOpen] = useState(false);
@@ -103,6 +104,7 @@ function App() {
                   <Route path="/settings" element={<Settings />} />
                   <Route path="/login" element={<Navigate to="/" />} />
                   <Route path="*" element={<Navigate to="/" />} />
+                  <Route path="/bookshop" element={BookshopHomepage} />
                 </Route>
               )}
             </>

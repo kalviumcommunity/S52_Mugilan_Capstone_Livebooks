@@ -15,6 +15,10 @@ export const navItemsDataUser = [
     name: "Speak",
     url: "/queries",
   },
+  {
+    name: "Read",
+    url: "/bookshop",
+  },
 ];
 export const navItemsDataAdmin = [
   {
